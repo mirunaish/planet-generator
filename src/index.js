@@ -7,8 +7,8 @@
 function setupCanvasSize(canvas, planet) {
   var renderWidth, renderHeight;
   function computeCanvasSize() {
-    renderWidth = Math.min(canvas.parentNode.clientWidth - 20, 820);
-    renderHeight = Math.floor((renderWidth * 9.0) / 16.0);
+    renderHeight = canvas.parentNode.clientHeight;
+    renderWidth = Math.floor((renderHeight * 16.0) / 9.0);
 
     canvas.style.width = `${renderWidth}px`;
     canvas.style.height = `${renderHeight}px`;
