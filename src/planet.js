@@ -1,21 +1,54 @@
+function key(i, j) {
+  return i + ":" + j;
+}
+
 class Planet {
   constructor(gl) {
     this.camera = new Camera();
-    this.chunks = [new Chunk(0, 0)];
+    this.chunks = {};
 
     // this mesh will store and render all vertices and faces for all objects
-    this.mesh = new Mesh(
-      gl,
-      this.chunks[0].ground.vertices,
-      this.chunks[0].ground.faces
-    );
+    this.mesh = new Mesh(gl);
 
+    this.manageChunks();
     this.setPlayerYCoord();
   }
 
+  manageChunks() {
+    const { i: curI, j: curJ } = this.currentChunk();
+
+    // delete old chunks that are too far away
+    for (let chunk of Object.values(this.chunks)) {
+      if (
+        Math.abs(chunk.i - curI) > RENDER_DISTANCE ||
+        Math.abs(chunk.j - curJ) > RENDER_DISTANCE
+      ) {
+        console.log(`deleting chunk ${key(chunk.i, chunk.j)}`);
+        delete this.chunks[key(chunk.i, chunk.j)];
+      }
+    }
+
+    // create new chunks as player moves
+    for (let i = curI - RENDER_DISTANCE; i <= curI + RENDER_DISTANCE; i++) {
+      for (let j = curJ - RENDER_DISTANCE; j <= curJ + RENDER_DISTANCE; j++) {
+        if (!(key(i, j) in this.chunks)) {
+          console.log(`creating chunk ${key(i, j)}`);
+          this.chunks[key(i, j)] = new Chunk(i, j);
+        }
+      }
+    }
+  }
+
   /** get chunk that contains x and y coordinate */
-  currentChunk({ x, y }) {
-    // TODO
+  currentChunk() {
+    const { x, z } = this.camera.position;
+    const i = Math.floor((x + 8) / 16);
+    const j = Math.floor((z + 8) / 16);
+    return {
+      i: i,
+      j: j,
+      chunk: this.chunks[key(i, j)],
+    };
   }
 
   /**
@@ -23,7 +56,8 @@ class Planet {
    * this function is called every time the player moves
    */
   setPlayerYCoord() {
-    const elevation = this.chunks[0].ground.height(this.camera.position);
+    const { chunk } = this.currentChunk();
+    const elevation = chunk.ground.height(this.camera.position);
     this.camera.position.y = elevation + PLAYER_HEIGHT;
     this.camera.setView();
   }
@@ -42,6 +76,7 @@ class Planet {
     ).unit();
     this.camera.move(direction, running ? RUNNING_SPEED : MOVEMENT_SPEED);
 
+    this.manageChunks(); // create or delete chunks as appropriate
     this.setPlayerYCoord(); // move player feet to ground height
   }
 
