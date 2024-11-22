@@ -28,6 +28,23 @@ class Planet {
     this.camera.setView();
   }
 
+  move(running, movingForward, movingLeft, movingRight, movingBackward) {
+    if (movingForward && movingBackward) movingBackward = false;
+    if (movingLeft && movingRight) {
+      movingLeft = false;
+      movingRight = false;
+    }
+
+    const direction = new Vector(
+      movingForward ? 1 : movingBackward ? -1 : 0,
+      0,
+      movingLeft ? 1 : movingRight ? -1 : 0
+    ).unit();
+    this.camera.move(direction, running ? RUNNING_SPEED : MOVEMENT_SPEED);
+
+    this.setPlayerYCoord(); // move player feet to ground height
+  }
+
   render() {
     // render each chunk with everything included in it
     // this.chunks.forEach((chunk) => chunk.render());

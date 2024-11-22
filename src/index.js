@@ -54,32 +54,47 @@ function addMouseListeners(canvas, planet) {
   });
 }
 
+running = false;
+movingForward = false;
+movingLeft = false;
+movingRight = false;
+movingBackward = false;
+
 /** for moving forward, back, left, right */
 function addKeyboardListeners(_canvas, planet) {
-  let shiftDown = false;
-
   document.addEventListener("keydown", (event) => {
     if (event.key === "Shift") {
-      shiftDown = true;
+      running = true;
     }
     if (event.key === "w" || event.key === "W" || event.key === "ArrowUp") {
-      planet.camera.moveForward(shiftDown);
+      movingForward = true;
     }
     if (event.key === "a" || event.key === "A" || event.key === "ArrowLeft") {
-      planet.camera.moveLeft(shiftDown);
+      movingLeft = true;
     }
     if (event.key === "s" || event.key === "S" || event.key === "ArrowDown") {
-      planet.camera.moveBackward(shiftDown);
+      movingBackward = true;
     }
     if (event.key === "d" || event.key === "D" || event.key === "ArrowRight") {
-      planet.camera.moveRight(shiftDown);
+      movingRight = true;
     }
-    planet.setPlayerYCoord(); // move player feet to ground height
   });
 
   document.addEventListener("keyup", (event) => {
     if (event.key === "Shift") {
-      shiftDown = false;
+      running = false;
+    }
+    if (event.key === "w" || event.key === "W" || event.key === "ArrowUp") {
+      movingForward = false;
+    }
+    if (event.key === "a" || event.key === "A" || event.key === "ArrowLeft") {
+      movingLeft = false;
+    }
+    if (event.key === "s" || event.key === "S" || event.key === "ArrowDown") {
+      movingBackward = false;
+    }
+    if (event.key === "d" || event.key === "D" || event.key === "ArrowRight") {
+      movingRight = false;
     }
   });
 }
@@ -112,6 +127,14 @@ function setupPlanetGenerator() {
     // clear canvas to background (sky) color
     gl.clearColor(...COLORS.sky, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    planet.move(
+      running,
+      movingForward,
+      movingLeft,
+      movingRight,
+      movingBackward
+    );
 
     planet.render();
     window.requestAnimationFrame(renderLoop);

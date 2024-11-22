@@ -32,32 +32,17 @@ class Camera {
   }
 
   drag(dx, dy) {
-    this.pitch = Math.min(Math.max(this.pitch + dy * 0.5, -90), 90);
-    this.yaw = this.yaw + dx * 0.5;
+    this.pitch = Math.min(Math.max(this.pitch + dy * CAMERA_SPEED, -90), 90);
+    this.yaw = this.yaw + dx * CAMERA_SPEED;
     this.setView();
   }
 
-  moveForward(isRunning) {
-    const speed = isRunning ? RUNNING_SPEED : MOVEMENT_SPEED;
-    this.position.x -= Math.sin(-(Math.PI * this.yaw) / 180) * speed;
-    this.position.z -= Math.cos(-(Math.PI * this.yaw) / 180) * speed;
-  }
-
-  moveLeft(isRunning) {
-    const speed = isRunning ? RUNNING_SPEED : MOVEMENT_SPEED;
-    this.position.x -= Math.cos(-(Math.PI * this.yaw) / 180) * speed;
-    this.position.z += Math.sin(-(Math.PI * this.yaw) / 180) * speed;
-  }
-
-  moveRight(isRunning) {
-    const speed = isRunning ? RUNNING_SPEED : MOVEMENT_SPEED;
-    this.position.x += Math.cos(-(Math.PI * this.yaw) / 180) * speed;
-    this.position.z -= Math.sin(-(Math.PI * this.yaw) / 180) * speed;
-  }
-
-  moveBackward(isRunning) {
-    const speed = isRunning ? RUNNING_SPEED : MOVEMENT_SPEED;
-    this.position.x += Math.sin(-(Math.PI * this.yaw) / 180) * speed;
-    this.position.z += Math.cos(-(Math.PI * this.yaw) / 180) * speed;
+  move(direction, speed) {
+    this.position.x +=
+      direction.x * -Math.sin(-(Math.PI * this.yaw) / 180) * speed +
+      direction.z * -Math.cos(-(Math.PI * this.yaw) / 180) * speed;
+    this.position.z +=
+      direction.x * -Math.cos(-(Math.PI * this.yaw) / 180) * speed +
+      direction.z * +Math.sin(-(Math.PI * this.yaw) / 180) * speed;
   }
 }
