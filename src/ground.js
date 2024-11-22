@@ -7,7 +7,7 @@ class Ground {
   scale = 0.01; // noise scale
   octaves = 10; // noise octaves
   range = { min: -8, max: 20 }; // height range (roughly. may be +-20%)
-  resolution = CHUNK_SIZE * 10; // nb of verts in each direction. one per 10cm
+  resolution = CHUNK_SIZE * 5; // nb of verts in each direction. one per 10cm
 
   constructor(center) {
     this.center = center;
@@ -35,7 +35,7 @@ class Ground {
 
     for (let i = 0; i <= this.resolution; i++) {
       for (let j = 0; j <= this.resolution; j++) {
-        const v = vertices[i * this.resolution + j];
+        const v = vertices[i * (this.resolution + 1) + j];
         v.y = this.height(v);
       }
     }
@@ -55,12 +55,14 @@ class Ground {
     console.log(`min: ${min}, max: ${max}`);
   }
 
-  render() {
-    // TODO
-  }
-
   /** render all ground in all visible chunks, making sure they connect */
-  static renderAll(allGround) {
+  static renderAll(gl, allGround, camera) {
     // TODO
+
+    // for now, make a mesh of each ground and render it
+    // i will eventually have to combine all grounds into a single mesh
+    allGround
+      .map((g) => new Mesh(gl, g.vertices, g.faces))
+      .forEach((m) => m.render(camera.model, camera.view, camera.projection));
   }
 }

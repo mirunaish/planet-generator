@@ -21,7 +21,7 @@ function setupCanvasSize(canvas, planet) {
     canvas.width = renderWidth;
     canvas.height = renderHeight;
 
-    planet.mesh.gl.viewport(0, 0, renderWidth, renderHeight);
+    planet.gl.viewport(0, 0, renderWidth, renderHeight);
     planet.camera.setCanvasSize(renderWidth, renderHeight);
   }
   window.addEventListener("resize", computeCanvasSize);

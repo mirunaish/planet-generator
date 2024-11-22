@@ -12,16 +12,16 @@ function plane(center, size, resolution) {
   // generate all vertices
   for (let i = 0; i <= resolution; i++) {
     for (let j = 0; j <= resolution; j++) {
-      const x = corner.x + i * (size / resolution);
-      const z = corner.z + j * (size / resolution);
+      const x = corner.x + size * (i / resolution);
+      const z = corner.z + size * (j / resolution);
 
       vertices.push(new Vector(x, corner.y, z));
     }
   }
 
   // construct faces
-  for (let i = 0; i < resolution - 1; i++) {
-    for (let j = 0; j < resolution - 1; j++) {
+  for (let i = 0; i < resolution; i++) {
+    for (let j = 0; j < resolution; j++) {
       const v1 = i * (resolution + 1) + j;
       const v2 = i * (resolution + 1) + j + 1;
       const v3 = (i + 1) * (resolution + 1) + j;

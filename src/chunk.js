@@ -9,6 +9,7 @@ class Chunk {
   }
 
   render() {
-    this.ground.render();
+    // ground is rendered separately
+    // but render everything else in the chunk here
   }
 }

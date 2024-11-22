@@ -4,11 +4,10 @@ function key(i, j) {
 
 class Planet {
   constructor(gl) {
+    this.gl = gl;
+
     this.camera = new Camera();
     this.chunks = {};
-
-    // this mesh will store and render all vertices and faces for all objects
-    this.mesh = new Mesh(gl);
 
     this.manageChunks();
     this.setPlayerYCoord();
@@ -81,13 +80,12 @@ class Planet {
   }
 
   render() {
-    // render each chunk with everything included in it
-    // this.chunks.forEach((chunk) => chunk.render());
+    // will render ground separately because ground pieces across chunks have to
+    // connect to one another
+    const allGround = Object.values(this.chunks).map((chunk) => chunk.ground);
+    Ground.renderAll(this.gl, allGround, this.camera);
 
-    this.mesh.render(
-      this.camera.model,
-      this.camera.view,
-      this.camera.projection
-    );
+    // render each chunk with everything else other than ground
+    Object.values(this.chunks).forEach((chunk) => chunk.render());
   }
 }
