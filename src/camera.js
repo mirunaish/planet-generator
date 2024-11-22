@@ -14,7 +14,7 @@ class Camera {
     this.view = Matrix.rotate(this.pitch, 1, 0, 0)
       .multiply(Matrix.rotate(this.yaw, 0, 1, 0))
       .multiply(
-        Matrix.translate(this.position.x, this.position.y, this.position.z)
+        Matrix.translate(-this.position.x, -this.position.y, -this.position.z)
       );
   }
 
@@ -39,25 +39,25 @@ class Camera {
 
   moveForward(isRunning) {
     const speed = isRunning ? RUNNING_SPEED : MOVEMENT_SPEED;
-    this.position.x += Math.sin(-(Math.PI * this.yaw) / 180) * speed;
-    this.position.z += Math.cos(-(Math.PI * this.yaw) / 180) * speed;
+    this.position.x -= Math.sin(-(Math.PI * this.yaw) / 180) * speed;
+    this.position.z -= Math.cos(-(Math.PI * this.yaw) / 180) * speed;
   }
 
   moveLeft(isRunning) {
-    const speed = isRunning ? RUNNING_SPEED : MOVEMENT_SPEED;
-    this.position.x += Math.cos(-(Math.PI * this.yaw) / 180) * speed;
-    this.position.z -= Math.sin(-(Math.PI * this.yaw) / 180) * speed;
-  }
-
-  moveRight(isRunning) {
     const speed = isRunning ? RUNNING_SPEED : MOVEMENT_SPEED;
     this.position.x -= Math.cos(-(Math.PI * this.yaw) / 180) * speed;
     this.position.z += Math.sin(-(Math.PI * this.yaw) / 180) * speed;
   }
 
+  moveRight(isRunning) {
+    const speed = isRunning ? RUNNING_SPEED : MOVEMENT_SPEED;
+    this.position.x += Math.cos(-(Math.PI * this.yaw) / 180) * speed;
+    this.position.z -= Math.sin(-(Math.PI * this.yaw) / 180) * speed;
+  }
+
   moveBackward(isRunning) {
     const speed = isRunning ? RUNNING_SPEED : MOVEMENT_SPEED;
-    this.position.x -= Math.sin(-(Math.PI * this.yaw) / 180) * speed;
-    this.position.z -= Math.cos(-(Math.PI * this.yaw) / 180) * speed;
+    this.position.x += Math.sin(-(Math.PI * this.yaw) / 180) * speed;
+    this.position.z += Math.cos(-(Math.PI * this.yaw) / 180) * speed;
   }
 }

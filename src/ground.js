@@ -4,7 +4,8 @@ class Ground {
   random = new Random(RANDOM_SEED + 937565);
 
   // constants for ground generation
-  octaves = 4; // noise octaves
+  scale = 0.01; // noise scale
+  octaves = 10; // noise octaves
   range = { min: -8, max: 20 }; // height range (roughly. may be +-20%)
   resolution = CHUNK_SIZE * 10; // nb of verts in each direction. one per 10cm
 
@@ -17,17 +18,25 @@ class Ground {
 
   /** return height of ground at x and y coordinates */
   height(pos) {
-    return this.center.y; // + this.random.noise({ x: pos.x, y:pos.z }, this.octaves, this.range) / 20
+    return (
+      this.center.y +
+      this.random.noise(
+        { x: pos.x, z: pos.z },
+        this.scale,
+        this.octaves,
+        this.range
+      )
+    );
   }
 
   /** generate vertices of plane with height */
   generate() {
     const { vertices, faces } = plane(this.center, CHUNK_SIZE, this.resolution);
 
-    for (let x = 0; x < this.resolution; x++) {
-      for (let z = 0; z < this.resolution; z++) {
-        const v = vertices[x * this.resolution + z];
-        v.y = this.height({ x: v.x, z: v.z });
+    for (let i = 0; i <= this.resolution; i++) {
+      for (let j = 0; j <= this.resolution; j++) {
+        const v = vertices[i * this.resolution + j];
+        v.y = this.height(v);
       }
     }
 

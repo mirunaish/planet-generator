@@ -24,7 +24,7 @@ class Planet {
    */
   setPlayerYCoord() {
     const elevation = this.chunks[0].ground.height(this.camera.position);
-    this.camera.position.y = elevation - PLAYER_HEIGHT;
+    this.camera.position.y = elevation + PLAYER_HEIGHT;
     this.camera.setView();
   }
 

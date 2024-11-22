@@ -61,13 +61,17 @@ function addKeyboardListeners(_canvas, planet) {
   document.addEventListener("keydown", (event) => {
     if (event.key === "Shift") {
       shiftDown = true;
-    } else if (event.key === "w" || event.key === "ArrowUp") {
+    }
+    if (event.key === "w" || event.key === "W" || event.key === "ArrowUp") {
       planet.camera.moveForward(shiftDown);
-    } else if (event.key === "a" || event.key === "ArrowLeft") {
+    }
+    if (event.key === "a" || event.key === "A" || event.key === "ArrowLeft") {
       planet.camera.moveLeft(shiftDown);
-    } else if (event.key === "s" || event.key === "ArrowDown") {
+    }
+    if (event.key === "s" || event.key === "S" || event.key === "ArrowDown") {
       planet.camera.moveBackward(shiftDown);
-    } else if (event.key === "d" || event.key === "ArrowRight") {
+    }
+    if (event.key === "d" || event.key === "D" || event.key === "ArrowRight") {
       planet.camera.moveRight(shiftDown);
     }
     planet.setPlayerYCoord(); // move player feet to ground height
@@ -93,10 +97,6 @@ function setupPlanetGenerator() {
     return;
   }
 
-  // clear canvas to white
-  gl.clearColor(1.0, 1.0, 1.0, 1.0);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
   // create planet
   var planet = new Planet(gl);
 
@@ -109,6 +109,10 @@ function setupPlanetGenerator() {
 
   // do the render loop
   var renderLoop = function () {
+    // clear canvas to background (sky) color
+    gl.clearColor(...COLORS.sky, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
     planet.render();
     window.requestAnimationFrame(renderLoop);
   };

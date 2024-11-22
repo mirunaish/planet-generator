@@ -16,14 +16,16 @@ class Random {
    * add multiple octaves
    * and scale to [min, max] (roughly)
    */
-  noise({ x, y }, octaves = 1, { min, max } = { min: -1, max: 1 }) {
+  noise({ x, z }, scale = 1, octaves = 1, { min, max } = { min: -1, max: 1 }) {
     let size = 1;
     let d = 0; // offset noise so it doesn't all shrink towards the center
     let n = 0;
 
     // add together octaves, scaled by 2 each time
     for (let i = 0; i < octaves; i++) {
-      n += this.openSimplex.noise2D(x * size + d, y * size + d) / size;
+      n +=
+        this.openSimplex.noise2D(x * scale * size + d, z * scale * size + d) /
+        size;
       size *= 2;
       d += 1;
     }
