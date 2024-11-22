@@ -1,8 +1,8 @@
 class Camera {
   constructor() {
     this.position = { x: 0, y: 0, z: 0 };
-    this.pitch = 0; // how up or down i'm looking
-    this.yaw = 0; // in which direction i'm facing
+    this.pitch = 0; // how up or down i'm looking, in degrees
+    this.yaw = 0; // in which direction i'm facing, in degrees
     this.h = 0;
     this.w = 0;
 
@@ -11,13 +11,11 @@ class Camera {
   }
 
   setView() {
-    this.view = Matrix.translate(
-      this.position.x,
-      this.position.y,
-      this.position.z
-    )
-      .multiply(Matrix.rotate(this.pitch, 1, 0, 0))
-      .multiply(Matrix.rotate(this.yaw, 0, 1, 0));
+    this.view = Matrix.rotate(this.pitch, 1, 0, 0)
+      .multiply(Matrix.rotate(this.yaw, 0, 1, 0))
+      .multiply(
+        Matrix.translate(this.position.x, this.position.y, this.position.z)
+      );
   }
 
   setProjection() {
@@ -41,25 +39,25 @@ class Camera {
 
   moveForward(isRunning) {
     const speed = isRunning ? RUNNING_SPEED : MOVEMENT_SPEED;
-    this.position.x += Math.cos(this.yaw) * speed;
-    this.position.z -= Math.sin(this.yaw) * speed;
+    this.position.x += Math.sin(-(Math.PI * this.yaw) / 180) * speed;
+    this.position.z += Math.cos(-(Math.PI * this.yaw) / 180) * speed;
   }
 
   moveLeft(isRunning) {
     const speed = isRunning ? RUNNING_SPEED : MOVEMENT_SPEED;
-    this.position.x -= Math.cos(this.yaw) * speed;
-    this.position.z -= Math.sin(this.yaw) * speed;
+    this.position.x += Math.cos(-(Math.PI * this.yaw) / 180) * speed;
+    this.position.z -= Math.sin(-(Math.PI * this.yaw) / 180) * speed;
   }
 
   moveRight(isRunning) {
     const speed = isRunning ? RUNNING_SPEED : MOVEMENT_SPEED;
-    this.position.x += Math.cos(this.yaw) * speed;
-    this.position.z += Math.sin(this.yaw) * speed;
+    this.position.x -= Math.cos(-(Math.PI * this.yaw) / 180) * speed;
+    this.position.z += Math.sin(-(Math.PI * this.yaw) / 180) * speed;
   }
 
   moveBackward(isRunning) {
     const speed = isRunning ? RUNNING_SPEED : MOVEMENT_SPEED;
-    this.position.x -= Math.cos(this.yaw) * speed;
-    this.position.z += Math.sin(this.yaw) * speed;
+    this.position.x -= Math.sin(-(Math.PI * this.yaw) / 180) * speed;
+    this.position.z -= Math.cos(-(Math.PI * this.yaw) / 180) * speed;
   }
 }
