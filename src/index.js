@@ -112,6 +112,8 @@ function setupPlanetGenerator() {
     return;
   }
 
+  gl.enable(gl.DEPTH_TEST); // enable z-buffering
+
   // create planet
   var planet = new Planet(gl);
 
