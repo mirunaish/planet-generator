@@ -1,15 +1,18 @@
 class Planet {
-  constructor() {
+  constructor(gl) {
+    this.gl = gl;
+
     this.camera = new Camera();
-    this.ground = new Ground();
+    this.chunks = [new Chunk()];
+  }
+
+  setCanvasSize(renderWidth, renderHeight) {
+    this.renderWidth = renderWidth;
+    this.renderHeight = renderHeight;
   }
 
   render() {
-    // rasterization algorithm probably goes here
+    // render each chunk with everything included in it
+    this.chunks.forEach((chunk) => chunk.render());
   }
-}
-
-function setupPlanet() {
-  const planet = new Planet();
-  planet.render();
 }

@@ -1,0 +1,6 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[glsl]": {
+    "editor.defaultFormatter": "nolanderc.glsl-analyzer"
+  }
+}
