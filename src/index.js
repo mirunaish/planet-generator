@@ -20,9 +20,9 @@ function setupCanvasSize(canvas, planet) {
 
     canvas.width = renderWidth;
     canvas.height = renderHeight;
-    planet.gl.viewport(0, 0, renderWidth, renderHeight);
 
-    planet.setCanvasSize(renderWidth, renderHeight);
+    planet.mesh.gl.viewport(0, 0, renderWidth, renderHeight);
+    planet.camera.setCanvasSize(renderWidth, renderHeight);
   }
   window.addEventListener("resize", computeCanvasSize);
   computeCanvasSize();
@@ -70,6 +70,7 @@ function addKeyboardListeners(_canvas, planet) {
     } else if (event.key === "d" || event.key === "ArrowRight") {
       planet.camera.moveRight(shiftDown);
     }
+    planet.setPlayerYCoord(); // move player feet to ground height
   });
 
   document.addEventListener("keyup", (event) => {
