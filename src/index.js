@@ -124,6 +124,32 @@ function setupPlanetGenerator() {
   addMouseListeners(canvas, planet);
   addKeyboardListeners(canvas, planet);
 
+
+  //lsystem plants
+  const lSystemPlants = [];
+  const numofPlants = 200;
+
+  for (let i = 0; i < numofPlants; i++) {
+    const axiom = "F";
+    const rules = {
+      "F": "FF+[+F-F-F]-[-F+F+F]",
+    };
+
+    const position = [
+      Math.random() * 10 - 5,
+      Math.random() * 10 - 5,
+      Math.random() * 10 - 5,
+    ];
+    //const scale = Math.random() * 0.5 + 0.2;
+    const scale = 100;
+    //const iters = Math.floor(Math.random() * 5) + 3;
+    const iters = 2;
+
+    const plant = new LsystemPlant(gl, axiom, rules, iters, scale, position);
+    lSystemPlants.push(plant);
+  }
+
+
   // do the render loop
   var renderLoop = function () {
     // clear canvas to background (sky) color
@@ -137,6 +163,12 @@ function setupPlanetGenerator() {
       movingRight,
       movingBackward
     );
+
+    //render plants 
+    for (const plant of lSystemPlants) {
+      plant.render(planet.camera);
+    }
+    console.log("Plant Rendered");
 
     planet.render();
     window.requestAnimationFrame(renderLoop);
