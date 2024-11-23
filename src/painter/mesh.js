@@ -46,15 +46,6 @@ class Mesh {
       );
     }
 
-    // convert array of colors to array of components
-    let colors = [];
-    if (this.colors) {
-      for (let i = 0; i < this.colors.length; ++i) {
-        colors.push(this.colors[i].r, this.colors[i].g, this.colors[i].b);
-      }
-    }
-
-    var edgeIndices = [];
     var indices = [];
 
     // For every face
@@ -68,13 +59,6 @@ class Mesh {
           this.faces[i][j + 2]
         );
       }
-      // the edge indices are used to draw the wireframe of the mesh
-      for (
-        var j = 0, k = this.faces[i].length - 1;
-        j < this.faces[i].length;
-        k = j, ++j
-      )
-        edgeIndices.push(this.faces[i][k], this.faces[i][j]);
     }
 
     // calculate normals
@@ -110,6 +94,15 @@ class Mesh {
       }
     }
 
+    // convert array of colors to array of components
+    let colors = [];
+    if (this.colors) {
+      for (let i = 0; i < this.colors.length; ++i) {
+        colors.push(this.colors[i].r, this.colors[i].g, this.colors[i].b);
+      }
+    }
+
+    // convert array of texture coordinates to array of components
     let textureCoordinates = [];
     if (this.textureCoordinates) {
       for (let i = 0; i < this.textureCoordinates.length; ++i) {
@@ -121,12 +114,10 @@ class Mesh {
     }
 
     this.indexCount = indices.length;
-    this.edgeIndexCount = edgeIndices.length;
     this.positionVbo = createVertexBuffer(this.gl, positions);
     this.normalVbo = createVertexBuffer(this.gl, normals);
     if (this.colors) this.colorVbo = createVertexBuffer(this.gl, colors);
     this.indexIbo = createIndexBuffer(this.gl, indices);
-    this.edgeIndexIbo = createIndexBuffer(this.gl, edgeIndices);
 
     if (this.textureCoordinates)
       this.textureCoordinateVbo = createVertexBuffer(
@@ -139,37 +130,29 @@ class Mesh {
       );
   }
 
-  attachVariablesToShader(gl, modelViewProjection, model) {
-    // vertex positions
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.positionVbo);
-    var positionAttrib = gl.getAttribLocation(this.shaderProgram, "Position");
-    gl.enableVertexAttribArray(positionAttrib);
-    gl.vertexAttribPointer(positionAttrib, 3, gl.FLOAT, false, 0, 0);
+  bindBuffer(attributeName, buffer, size) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    var attribute = gl.getAttribLocation(this.shaderProgram, attributeName);
+    gl.enableVertexAttribArray(attribute);
+    gl.vertexAttribPointer(attribute, size, gl.FLOAT, false, 0, 0);
+  }
 
-    // vertex normals
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.normalVbo);
-    var normalAttrib = gl.getAttribLocation(this.shaderProgram, "Normal");
-    gl.enableVertexAttribArray(normalAttrib);
-    gl.vertexAttribPointer(normalAttrib, 3, gl.FLOAT, false, 0, 0);
+  attachVariablesToShader(gl, modelViewProjection, model) {
+    // index buffer
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexIbo);
+
+    this.bindBuffer("Position", this.positionVbo, 3); // vertex positions
+    this.bindBuffer("Normal", this.normalVbo, 3); // vertex normals
 
     // vertex colors
     if (this.colors) {
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.colorVbo);
-      const colorAttrib = gl.getAttribLocation(this.shaderProgram, "Color");
-      gl.enableVertexAttribArray(colorAttrib);
-      gl.vertexAttribPointer(colorAttrib, 3, gl.FLOAT, false, 0, 0);
+      this.bindBuffer("Color", this.colorVbo, 3);
     }
 
     // add everything texture related
     if (this.textureCoordinates && this.textureWeights && this.textures) {
       // add texture coords
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordinateVbo);
-      var textureCoordAttrib = gl.getAttribLocation(
-        this.shaderProgram,
-        "TextureCoord"
-      );
-      gl.enableVertexAttribArray(textureCoordAttrib);
-      gl.vertexAttribPointer(textureCoordAttrib, 2, gl.FLOAT, false, 0, 0);
+      this.bindBuffer("TextureCoord", this.textureCoordinateVbo, 2);
 
       // add textures and weights
       for (let i = 0; i < this.textures.length; i++) {
@@ -180,18 +163,13 @@ class Mesh {
         gl.uniform1i(tloc, i); // set uniform to the texture unit, or something
 
         // weights
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.textureWeightVbo[i]);
-        var textureWeightAttrib = gl.getAttribLocation(
-          this.shaderProgram,
-          "Texture" + i + "Weight"
-        );
-        gl.enableVertexAttribArray(textureWeightAttrib);
-        gl.vertexAttribPointer(textureWeightAttrib, 1, gl.FLOAT, false, 0, 0);
+        this.bindBuffer("Texture" + i + "Weight", this.textureWeightVbo[i], 1);
       }
     }
-
-    // index buffer
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexIbo);
+    gl.uniform1i(
+      gl.getUniformLocation(this.shaderProgram, "uUseTextures"),
+      this.useTextures
+    );
 
     // add model view projection and model matrices
     gl.uniformMatrix4fv(
@@ -204,15 +182,11 @@ class Mesh {
       false,
       model.transpose().m
     );
-
-    gl.uniform1i(
-      gl.getUniformLocation(this.shaderProgram, "uUseTextures"),
-      this.useTextures
-    );
   }
 
   render(model, view, projection) {
     this.gl.useProgram(this.shaderProgram);
+    this.gl.enable(gl.DEPTH_TEST); // enable z buffering
 
     var modelViewProjection = projection.multiply(view).multiply(model);
     this.attachVariablesToShader(this.gl, modelViewProjection, model);

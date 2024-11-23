@@ -32,7 +32,7 @@ function loadTexture(gl, path) {
   return texture;
 }
 
-/** everything below copied without modification from assignment 3 glUtil.js */
+/** everything below copied with small modifications from assignment 3 glUtil.js */
 
 function createVertexBuffer(gl, vertexData) {
   // Create a buffer
@@ -110,6 +110,13 @@ function createShaderProgram(gl, vertexSource, fragmentSource) {
   gl.attachShader(program, fragmentShader);
   // Link the shaders together into a program
   gl.linkProgram(program);
+
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    throw new Error(
+      "Shader linking error':\n\n    " +
+        gl.getProgramInfoLog(program).split("\n").join("\n    ")
+    );
+  }
 
   return program;
 }
