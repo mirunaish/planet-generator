@@ -1,5 +1,5 @@
 const RANDOM_SEED = 29576359; // seed for the rng. just a random number
-const RENDER_DISTANCE = 3; // # chunks to render in each direction
+const RENDER_DISTANCE = 6; // # chunks to render in each direction
 const CHUNK_SIZE = 10; // # meters in each direction
 
 const BIOME_SIZE = 4; // approx size of a biome in chunks
@@ -26,6 +26,11 @@ const COLORS = {
     { r: 0.17, g: 0.26, b: 0.02 }, // dark green
     { r: 0.29, g: 0.427, b: 0.035 }, // green
     { r: 0.45, g: 0.65, b: 0.1 }, // yellowish green
+  ],
+  snow: [
+    { r: 0.9, g: 0.9, b: 0.9 }, // light gray
+    { r: 0.95, g: 0.95, b: 0.95 }, // very light grey
+    { r: 1, g: 1, b: 1 }, // white
   ],
   water: { r: 0.1, g: 0.2, b: 0.5 },
 };
