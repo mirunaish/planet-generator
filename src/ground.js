@@ -20,7 +20,7 @@ class Ground {
     [0, 0.3, 0.6, 0.7, 0.8, 1]
   );
 
-  constructor(gl, center) {
+  constructor(center) {
     this.center = center;
 
     this.vertices = [];
@@ -31,13 +31,7 @@ class Ground {
     this.generate();
     this.logRange();
 
-    this.mesh = new Mesh(
-      gl,
-      this.vertices,
-      this.faces,
-      this.normals,
-      this.colors
-    );
+    this.mesh = new Mesh(this.vertices, this.faces, this.normals, this.colors);
   }
 
   /** return height of ground at x and y coordinates */

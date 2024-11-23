@@ -21,7 +21,7 @@ function setupCanvasSize(canvas, planet) {
     canvas.width = renderWidth;
     canvas.height = renderHeight;
 
-    planet.gl.viewport(0, 0, renderWidth, renderHeight);
+    gl.viewport(0, 0, renderWidth, renderHeight);
     planet.camera.setCanvasSize(renderWidth, renderHeight);
   }
   window.addEventListener("resize", computeCanvasSize);
@@ -99,11 +99,13 @@ function addKeyboardListeners(_canvas, planet) {
   });
 }
 
+// global so i don't have to carry it around in args, save it in objects etc
+let gl;
+
 /** setup the planet generator and do the render loop */
 function setupPlanetGenerator() {
   var canvas = document.getElementById("canvas");
 
-  let gl;
   try {
     gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
   } catch (e) {}

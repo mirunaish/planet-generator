@@ -1,7 +1,7 @@
 /** adapted from assignment 3 GLMesh.js and Mesh.js */
 
 class Mesh {
-  constructor(gl, vertices, faces, normals, colors) {
+  constructor(vertices, faces, normals, colors) {
     this.gl = gl;
     this.vertices = vertices;
     this.faces = faces;

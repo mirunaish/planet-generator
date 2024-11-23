@@ -3,9 +3,7 @@ function key(i, j) {
 }
 
 class Planet {
-  constructor(gl) {
-    this.gl = gl;
-
+  constructor() {
     this.camera = new Camera();
     this.chunks = {};
 
@@ -32,7 +30,7 @@ class Planet {
       for (let j = curJ - RENDER_DISTANCE; j <= curJ + RENDER_DISTANCE; j++) {
         if (!(key(i, j) in this.chunks)) {
           console.log(`creating chunk ${key(i, j)}`);
-          this.chunks[key(i, j)] = new Chunk(this.gl, i, j);
+          this.chunks[key(i, j)] = new Chunk(i, j);
         }
       }
     }
@@ -81,8 +79,6 @@ class Planet {
 
   render() {
     // render each chunk
-    Object.values(this.chunks).forEach((chunk) =>
-      chunk.render(this.gl, this.camera)
-    );
+    Object.values(this.chunks).forEach((chunk) => chunk.render(this.camera));
   }
 }
