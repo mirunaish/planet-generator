@@ -15,12 +15,27 @@ class Water {
   }
 
   /** once vertices, faces etc have been generated, create a mesh object */
-  updateMesh({ vertices, faces, normals, colors }) {
+  updateMesh({
+    vertices,
+    faces,
+    normals,
+    colors,
+    textureCoordinates,
+    textureWeights,
+  }) {
     // worker returns normal data as objects, not vectors
     // need to convert to vectors again
     normals = normals.map((n) => new Vector(n.x, n.y, n.z));
 
-    this.mesh = new Mesh(vertices, faces, normals, colors);
+    this.mesh = new Mesh(
+      vertices,
+      faces,
+      normals,
+      colors,
+      textureCoordinates,
+      [WaterGenerator.texture],
+      textureWeights
+    );
   }
 
   subscribeToWorker() {

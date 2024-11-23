@@ -18,5 +18,6 @@ WebGL procedurally generated planet
 
 ## References
 
+- a [tutorial on textures](https://learnopengl.com/Getting-started/Textures) and [another one](https://webglfundamentals.org/webgl/lessons/webgl-2-textures.html)
 - stackoverflow
   - [web worker](https://stackoverflow.com/a/50221215)

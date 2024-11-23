@@ -1,4 +1,38 @@
-/** copied without modification from assignment 3 glUtil.js */
+function loadTexture(gl, path) {
+  const image = new Image();
+  const texture = gl.createTexture();
+
+  // when image loads, create gl texture
+  image.onload = () => {
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0, // level?
+      gl.RGB,
+      gl.RGB,
+      gl.UNSIGNED_BYTE,
+      image
+    );
+
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.texParameteri(
+      gl.TEXTURE_2D,
+      gl.TEXTURE_MIN_FILTER,
+      gl.LINEAR_MIPMAP_LINEAR
+    );
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  };
+
+  image.src = path;
+
+  return texture;
+}
+
+/** everything below copied without modification from assignment 3 glUtil.js */
 
 function createVertexBuffer(gl, vertexData) {
   // Create a buffer
