@@ -1,6 +1,5 @@
 class Chunk {
-  constructor(gl, i, j) {
-    this.gl = gl;
+  constructor(i, j) {
     this.i = i;
     this.j = j;
 
@@ -42,8 +41,9 @@ class Chunk {
   render(camera) {
     if (!this.doneGenerating()) return;
 
+    console.log("rendering");
     this.ground.render(camera);
     this.water.render(camera);
-    // this.trees.render(camera);
+    this.trees.render(camera);
   }
 }
