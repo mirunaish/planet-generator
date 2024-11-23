@@ -12,6 +12,38 @@ function calcFaceNormal(mesh, faceIndex) {
   return e1.cross(e2).unit();
 }
 
+/** given a height function and a position, calculate normal at this position */
+function normal(height, pos) {
+  const delta = 0.001;
+
+  const dx =
+    height({ x: pos.x + delta, z: pos.z }) -
+    height({ x: pos.x - delta, z: pos.z });
+  const dz =
+    height({ x: pos.x, z: pos.z + delta }) -
+    height({ x: pos.x, z: pos.z - delta });
+
+  return new Vector(-dx / (delta * 2), 1, -dz / (delta * 2));
+}
+
+function lerp(a, b, t) {
+  return a * (1 - t) + b * t;
+}
+
+function lerpColor(a, b, t) {
+  return {
+    r: lerp(a.r, b.r, t),
+    g: lerp(a.g, b.g, t),
+    b: lerp(a.b, b.b, t),
+  };
+}
+
+function clip(x, a, b) {
+  if (x < a) return a;
+  if (x > b) return b;
+  return x;
+}
+
 /**
  * get a gradient with given colors and their positions.
  * positions should be increasing from 0 to 1.

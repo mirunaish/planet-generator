@@ -1,14 +1,14 @@
-console.log("starting ground worker");
-const groundWorker = new Worker("src/webWorkers/generateWorker.js");
-groundWorker.onerror = function (error) {
-  console.error("ground worker error:", error);
+console.log("starting water worker");
+const waterWorker = new Worker("src/webWorkers/generateWorker.js");
+waterWorker.onerror = function (error) {
+  console.error("water worker error:", error);
 };
 
-/** a single chunk of ground */
-class Ground {
+/** a chunk of water */
+class Water {
   constructor(center) {
     this.center = { x: center.x, y: 0, z: center.z };
-    this.name = `ground:${center.x}:${center.z}`;
+    this.name = `water:${center.x}:${center.z}`;
 
     this.subscribeToWorker();
     this.generate();
@@ -34,30 +34,19 @@ class Ground {
     };
 
     // when worker responds with data, update my stuff
-    groundWorker.addEventListener("message", callback);
+    waterWorker.addEventListener("message", callback);
   }
 
-  /**
-   * return height of ground at x and y coordinates.
-   * if you update this, make sure to update groundGenerator.js too
-   */
-  height(pos) {
-    return GroundGenerator.height(pos);
-  }
-
-  /** generate vertices of plane with height */
   generate() {
-    // ask ground worker to generate terrain for me
-    // worker will respond with a message when it's done
-    groundWorker.postMessage({
-      type: "ground",
+    // ask water worker to generate water
+    waterWorker.postMessage({
+      type: "water",
       caller: this.name,
       center: this.center,
     });
   }
 
   render(camera) {
-    if (!this.mesh) return; // waiting for generator
     this.mesh.render(camera.model, camera.view, camera.projection);
   }
 }

@@ -13,21 +13,21 @@ class Random {
 
   /**
    * get noise value;
-   * add multiple octaves
+   * add multiple octaves (given as number or array)
    * and scale to [min, max] (roughly)
    */
   noise({ x, z }, scale = 1, octaves = 1, { min, max } = { min: -1, max: 1 }) {
-    let size = 1;
-    let d = 0; // offset noise so it doesn't all shrink towards the center
     let n = 0;
 
+    if (!octaves.length) octaves = Array.from({ length: octaves }, (_, i) => i);
+
     // add together octaves, scaled by 2 each time
-    for (let i = 0; i < octaves; i++) {
+    for (let i of octaves) {
+      const size = 2 ** i;
+      const d = i * 1; // offset noise so it doesn't all shrink towards the center
       n +=
         this.openSimplex.noise2D(x * scale * size + d, z * scale * size + d) /
         size;
-      size *= 2;
-      d += 1;
     }
 
     // scale to [min, max] (roughly) (n may not be [-1, 1] if octaves > 1)
