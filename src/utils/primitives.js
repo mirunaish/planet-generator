@@ -34,3 +34,48 @@ function plane(center, size, resolution) {
 
   return { vertices, faces };
 }
+
+
+
+/** Returns vertices and triangle faces of a cylinder */
+function cylinder(center, radius, height, radialResolution) {
+  const vertices = [];
+  const faces = [];
+
+  // vertices
+  for (let i = 0; i <= radialResolution; i++) {
+    const angle = (i / radialResolution) * 2 * Math.PI;
+    const x = center.x + radius * Math.cos(angle);
+    const z = center.z + radius * Math.sin(angle);
+
+    vertices.push(new Vector(x, center.y, z)); // bottom circle
+    vertices.push(new Vector(x, center.y + height, z)); // top circle
+  }
+
+  // center vertices for caps
+  const bottomCenter = vertices.length;
+  vertices.push(new Vector(center.x, center.y, center.z));
+  const topCenter = vertices.length;
+  vertices.push(new Vector(center.x, center.y + height, center.z));
+
+  // faces
+  for (let i = 0; i < radialResolution; i++) {
+    const v1 = i * 2;
+    const v2 = v1 + 1;
+    const v3 = (i * 2 + 2) % (radialResolution * 2);
+    const v4 = (v3 + 1) % (radialResolution * 2);
+
+    // Side faces
+    faces.push([v1, v3, v4]);
+    faces.push([v1, v4, v2]);
+
+    // Bottom cap
+    faces.push([v1, bottomCenter, v3]);
+
+    // Top cap
+    faces.push([v4, topCenter, v2]);
+  }
+
+  return { vertices, faces };
+}
+
