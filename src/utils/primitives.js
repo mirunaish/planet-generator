@@ -68,7 +68,7 @@ function sphere(center, radius, resolution) {
       faces.push([v1, v4, v3]);
     }
   }
-  return { vertices, edges };
+  return { vertices, faces };
 }
 
 /** returns vertices and faces of a cylinder */
