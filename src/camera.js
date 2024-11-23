@@ -11,14 +11,12 @@ class Camera {
   }
 
   setView() {
-    this.view = Matrix.rotate(this.pitch, 1, 0, 0)
-      .multiply(Matrix.rotate(this.yaw, 0, 1, 0))
-      .multiply(
-        Matrix.translate(-this.position.x, -this.position.y, -this.position.z)
-      );
-
     this.viewNoTranslation = Matrix.rotate(this.pitch, 1, 0, 0).multiply(
       Matrix.rotate(this.yaw, 0, 1, 0)
+    );
+
+    this.view = this.viewNoTranslation.multiply(
+      Matrix.translate(-this.position.x, -this.position.y, -this.position.z)
     );
   }
 
