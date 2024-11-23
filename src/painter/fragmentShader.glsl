@@ -15,5 +15,7 @@ vec3 lambert() {
 
 void main() {
     vec3 color = vColor;
-    gl_FragColor = vec4(color * lambert(), 1.0);
+    vec3 ambient = vec3(0.3, 0.35, 0.4);
+    vec3 lightColor = lambert(); // amount of light on this area
+    gl_FragColor = vec4(color * (lightColor + ambient * (vec3(1.0) - lightColor)), 1.0);
 }
