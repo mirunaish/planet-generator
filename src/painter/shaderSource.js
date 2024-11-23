@@ -9,7 +9,7 @@ const vec3 LightColor = vec3(1, 1, 0.9);
 
 varying vec3 vWorldPosition;
 varying vec3 vNormal;
-// varying vec3 vColor;
+varying vec3 vColor;
 
 vec3 lambert() {
     vec3 color = LightColor *
@@ -18,7 +18,7 @@ vec3 lambert() {
 }
 
 void main() {
-    vec3 color = 0.7 * vec3(1, 0.5, 0.5);
+    vec3 color = vColor;
     gl_FragColor = vec4(color * lambert(), 1.0);
 }
 `;
@@ -29,16 +29,16 @@ uniform mat4 ModelViewProjection;
 
 attribute vec3 Position;
 attribute vec3 Normal;
-// attribute vec3 Color;
+attribute vec3 Color;
 
 varying vec3 vWorldPosition;
 varying vec3 vNormal;
-// varying vec3 vColor;
+varying vec3 vColor;
 
 void main() {
     gl_Position = ModelViewProjection * vec4(Position, 1);
     vWorldPosition = (Model * vec4(Position, 1)).xyz;
     vNormal = (Model * vec4(Normal, 1)).xyz;
-    // vColor = Color;
+    vColor = Color;
 }
 `;

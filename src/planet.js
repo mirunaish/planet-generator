@@ -32,7 +32,7 @@ class Planet {
       for (let j = curJ - RENDER_DISTANCE; j <= curJ + RENDER_DISTANCE; j++) {
         if (!(key(i, j) in this.chunks)) {
           console.log(`creating chunk ${key(i, j)}`);
-          this.chunks[key(i, j)] = new Chunk(i, j);
+          this.chunks[key(i, j)] = new Chunk(this.gl, i, j);
         }
       }
     }
@@ -80,12 +80,9 @@ class Planet {
   }
 
   render() {
-    // will render ground separately because ground pieces across chunks have to
-    // connect to one another
-    const allGround = Object.values(this.chunks).map((chunk) => chunk.ground);
-    Ground.renderAll(this.gl, allGround, this.camera);
-
-    // render each chunk with everything else other than ground
-    Object.values(this.chunks).forEach((chunk) => chunk.render());
+    // render each chunk
+    Object.values(this.chunks).forEach((chunk) =>
+      chunk.render(this.gl, this.camera)
+    );
   }
 }

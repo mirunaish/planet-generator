@@ -1,11 +1,12 @@
 /** adapted from assignment 3 GLMesh.js and Mesh.js */
 
 class Mesh {
-  constructor(gl, vertices, faces, normals) {
+  constructor(gl, vertices, faces, normals, colors) {
     this.gl = gl;
     this.vertices = vertices;
     this.faces = faces;
     if (normals && normals.length) this.normals = normals;
+    this.colors = colors;
 
     // create the shader program from the two source codes
     this.shaderProgram = createShaderProgram(
@@ -19,15 +20,20 @@ class Mesh {
 
   // create a triangle mesh, optionally using vertex normals if they are specified
   toGLMesh() {
-    var positions = [];
-
-    // convert array of vertices to array of coords
+    // convert array of vertices to array of positions (coords)
+    let positions = [];
     for (var i = 0; i < this.vertices.length; ++i) {
       positions.push(
         this.vertices[i].x,
         this.vertices[i].y,
         this.vertices[i].z
       );
+    }
+
+    // convert array of colors to array of components
+    let colors = [];
+    for (let i = 0; i < this.colors.length; ++i) {
+      colors.push(this.colors[i].r, this.colors[i].g, this.colors[i].b);
     }
 
     var edgeIndices = [];
@@ -53,6 +59,7 @@ class Mesh {
         edgeIndices.push(this.faces[i][k], this.faces[i][j]);
     }
 
+    // calculate normals
     var normals = [];
     if (this.normals) {
       // mesh contains vertex normals, just copy them
@@ -89,6 +96,7 @@ class Mesh {
     this.edgeIndexCount = edgeIndices.length;
     this.positionVbo = createVertexBuffer(this.gl, positions);
     this.normalVbo = createVertexBuffer(this.gl, normals);
+    this.colorVbo = createVertexBuffer(this.gl, colors);
     this.indexIbo = createIndexBuffer(this.gl, indices);
     this.edgeIndexIbo = createIndexBuffer(this.gl, edgeIndices);
   }
@@ -107,10 +115,10 @@ class Mesh {
     gl.vertexAttribPointer(normalAttrib, 3, gl.FLOAT, false, 0, 0);
 
     // vertex colors
-    // gl.bindBuffer(gl.ARRAY_BUFFER, this.colorVbo);
-    // const colorAttrib = gl.getAttribLocation(this.shaderProgram, "Color");
-    // gl.enableVertexAttribArray(colorAttrib);
-    // gl.vertexAttribPointer(colorAttrib, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.colorVbo);
+    const colorAttrib = gl.getAttribLocation(this.shaderProgram, "Color");
+    gl.enableVertexAttribArray(colorAttrib);
+    gl.vertexAttribPointer(colorAttrib, 3, gl.FLOAT, false, 0, 0);
 
     // index buffer
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexIbo);

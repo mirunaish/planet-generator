@@ -127,7 +127,7 @@ function setupPlanetGenerator() {
   // do the render loop
   var renderLoop = function () {
     // clear canvas to background (sky) color
-    gl.clearColor(...COLORS.sky, 1);
+    gl.clearColor(COLORS.sky.r, COLORS.sky.g, COLORS.sky.b, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     planet.move(

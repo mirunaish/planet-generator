@@ -1,32 +1,81 @@
 /** a single chunk of ground */
 class Ground {
   // use the same rng for all ground instances, so they line up at the edges
-  random = new Random(RANDOM_SEED + 937565);
+  heightRandom = new Random(RANDOM_SEED + 937565);
+  colorRandom = new Random(RANDOM_SEED + 5735401);
 
   // constants for ground generation
   scale = 0.01; // noise scale
-  octaves = 10; // noise octaves
+  octaves = 9; // noise octaves
   range = { min: -8, max: 20 }; // height range (roughly. may be +-20%)
-  resolution = CHUNK_SIZE * 5; // nb of verts in each direction. one per 10cm
+  resolution = CHUNK_SIZE * 10; // nb of verts in each direction. one per 10cm
 
-  constructor(center) {
+  // constants for coloring
+  cScale = 1;
+  cOctaves = 10;
+  cRange = { min: 0, max: 1 };
+  // gradient from ground to grass
+  gradient = COLORS.gradient(
+    [...COLORS.ground, ...COLORS.grass],
+    [0, 0.3, 0.6, 0.7, 0.8, 1]
+  );
+
+  constructor(gl, center) {
     this.center = center;
-    this.color = [0.5, 0.5, 0.5]; // grey
+
+    this.vertices = [];
+    this.faces = [];
+    this.normals = [];
+    this.colors = [];
+
     this.generate();
     this.logRange();
+
+    this.mesh = new Mesh(
+      gl,
+      this.vertices,
+      this.faces,
+      this.normals,
+      this.colors
+    );
   }
 
   /** return height of ground at x and y coordinates */
   height(pos) {
     return (
       this.center.y +
-      this.random.noise(
+      this.heightRandom.noise(
         { x: pos.x, z: pos.z },
         this.scale,
         this.octaves,
         this.range
       )
     );
+  }
+
+  /** calculate normal at this position */
+  normal(pos) {
+    const delta = 0.001;
+    const dx =
+      this.height({ x: pos.x + delta, z: pos.z }) -
+      this.height({ x: pos.x - delta, z: pos.z });
+    const dz =
+      this.height({ x: pos.x, z: pos.z + delta }) -
+      this.height({ x: pos.x, z: pos.z - delta });
+
+    return new Vector(-dx / (delta * 2), 1, -dz / (delta * 2));
+  }
+
+  /** get color of ground at this position */
+  color(pos) {
+    const t = this.colorRandom.noise(
+      { x: pos.x, z: pos.z },
+      this.cScale,
+      this.cOctaves,
+      this.cRange
+    );
+
+    return this.gradient(t);
   }
 
   /** generate vertices of plane with height */
@@ -37,6 +86,8 @@ class Ground {
       for (let j = 0; j <= this.resolution; j++) {
         const v = vertices[i * (this.resolution + 1) + j];
         v.y = this.height(v);
+        this.normals.push(this.normal(v)); // normal at this vertex
+        this.colors.push(this.color(v)); // color at this vertex
       }
     }
 
@@ -55,14 +106,7 @@ class Ground {
     console.log(`min: ${min}, max: ${max}`);
   }
 
-  /** render all ground in all visible chunks, making sure they connect */
-  static renderAll(gl, allGround, camera) {
-    // TODO
-
-    // for now, make a mesh of each ground and render it
-    // i will eventually have to combine all grounds into a single mesh
-    allGround
-      .map((g) => new Mesh(gl, g.vertices, g.faces))
-      .forEach((m) => m.render(camera.model, camera.view, camera.projection));
+  render(camera) {
+    this.mesh.render(camera.model, camera.view, camera.projection);
   }
 }
