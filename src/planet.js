@@ -69,7 +69,10 @@ class Planet {
 
   canWalk(x, z) {
     const { chunk } = this.currentChunk();
-    return chunk.ground.height({ x: x, z: z }) > 0;
+    if (!chunk.doneGenerating()) return false;
+    if (chunk.ground.height({ x: x, z: z }) <= 0.1) return false;
+
+    return true;
   }
 
   move(running, movingForward, movingLeft, movingRight, movingBackward) {
