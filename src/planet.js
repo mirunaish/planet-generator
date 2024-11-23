@@ -7,6 +7,8 @@ class Planet {
     this.camera = new Camera();
     this.chunks = {};
 
+    this.sky = new Sky();
+
     this.manageChunks();
     this.setPlayerYCoord();
   }
@@ -109,6 +111,8 @@ class Planet {
   }
 
   render() {
+    this.sky.render(this.camera);
+
     // render each chunk
     Object.values(this.chunks).forEach((chunk) => chunk.render(this.camera));
   }

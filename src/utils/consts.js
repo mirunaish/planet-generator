@@ -11,7 +11,10 @@ const RUNNING_SPEED = 0.1; // meters per frame when shift pressed
 const CAMERA_SPEED = 0.2;
 
 const COLORS = {
-  sky: { r: 0.5, g: 0.8, b: 0.9 },
+  sky: [
+    { r: 0.9, g: 1, b: 1 }, // light blue (bottom)
+    { r: 0.1, g: 0.5, b: 0.8 }, // deeper blue (top)
+  ],
   ground: [
     { r: 0.247, g: 0.179, b: 0.11 }, // dark brown
     { r: 0.556, g: 0.408, b: 0.322 }, // brown
