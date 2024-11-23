@@ -12,6 +12,20 @@ function calcFaceNormal(mesh, faceIndex) {
   return e1.cross(e2).unit();
 }
 
+/** given a height function and a position, calculate normal at this position */
+function normal(height, pos) {
+  const delta = 0.001;
+
+  const dx =
+    height({ x: pos.x + delta, z: pos.z }) -
+    height({ x: pos.x - delta, z: pos.z });
+  const dz =
+    height({ x: pos.x, z: pos.z + delta }) -
+    height({ x: pos.x, z: pos.z - delta });
+
+  return new Vector(-dx / (delta * 2), 1, -dz / (delta * 2));
+}
+
 /**
  * get a gradient with given colors and their positions.
  * positions should be increasing from 0 to 1.

@@ -1,4 +1,6 @@
 const GroundGenerator = {
+  resolution: CHUNK_SIZE * 4, // nb of verts in each direction
+
   heightSeed: RANDOM_SEED + 543,
   colorSeed: RANDOM_SEED + 1946,
   heightRandom: new Random(this.heightSeed),
@@ -8,7 +10,6 @@ const GroundGenerator = {
   scale: 0.01, // noise scale
   octaves: 9, // noise octaves
   range: { min: -8, max: 20 }, // height range (roughly. may be +-20%)
-  resolution: CHUNK_SIZE * 8, // nb of verts in each direction
 
   // constants for coloring
   cScale: 1,
@@ -30,20 +31,6 @@ const GroundGenerator = {
     );
   },
 
-  /** calculate normal at this position */
-  normal: (pos) => {
-    const delta = 0.001;
-
-    const dx =
-      GroundGenerator.height({ x: pos.x + delta, z: pos.z }) -
-      GroundGenerator.height({ x: pos.x - delta, z: pos.z });
-    const dz =
-      GroundGenerator.height({ x: pos.x, z: pos.z + delta }) -
-      GroundGenerator.height({ x: pos.x, z: pos.z - delta });
-
-    return new Vector(-dx / (delta * 2), 1, -dz / (delta * 2));
-  },
-
   /** get color of ground at this position */
   color: (pos) => {
     const t = GroundGenerator.colorRandom.noise(
@@ -56,7 +43,7 @@ const GroundGenerator = {
     return GroundGenerator.gradient(t);
   },
 
-  generate: (center) => {
+  generate: ({ center }) => {
     const resolution = GroundGenerator.resolution;
 
     const { vertices, faces } = plane(center, CHUNK_SIZE, resolution);
@@ -67,7 +54,7 @@ const GroundGenerator = {
       for (let j = 0; j <= resolution; j++) {
         const v = vertices[i * (resolution + 1) + j];
         v.y += GroundGenerator.height(v);
-        normals.push(GroundGenerator.normal(v)); // normal at this vertex
+        normals.push(normal(GroundGenerator.height, v)); // normal at this vertex
         colors.push(GroundGenerator.color(v)); // color at this vertex
       }
     }

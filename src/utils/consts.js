@@ -22,4 +22,5 @@ const COLORS = {
     { r: 0.45, g: 0.85, b: 0.15 }, // yellowish green
     { r: 0.2, g: 0.85, b: 0.1 }, // green
   ],
+  water: { r: 0.1, g: 0.2, b: 0.5 },
 };
