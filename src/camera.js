@@ -20,7 +20,7 @@ class Camera {
 
   setProjection() {
     // fov, aspect, near, far
-    this.projection = Matrix.perspective(35, this.w / this.h, 0.01, 1000);
+    this.projection = Matrix.perspective(60, this.w / this.h, 0.01, 1000);
   }
 
   setCanvasSize(renderWidth, renderHeight) {

@@ -8,7 +8,7 @@ const GroundGenerator = {
 
   // constants for ground generation
   scale: 0.01, // noise scale
-  octaves: [0, 1, 2, 4, 5], // noise octaves
+  octaves: [0, 1, 2, 4], // noise octaves
   range: { min: -8, max: 20 }, // height range (roughly. may be +-20%)
 
   // gradient from ground to grass
@@ -49,7 +49,7 @@ const GroundGenerator = {
     );
     const snowT = GroundGenerator.colorRandom.noise(
       pos,
-      0.5, // scale
+      0.2, // scale
       [1, 2, 10], // octaves
       { min: 0, max: 1 }
     );
