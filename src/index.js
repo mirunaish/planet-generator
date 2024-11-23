@@ -4,6 +4,7 @@
  * every time the window is resized, calculate new size and tell gl and planet
  * about the new size
  */
+
 function setupCanvasSize(canvas, planet) {
   var renderWidth, renderHeight;
   function computeCanvasSize() {
