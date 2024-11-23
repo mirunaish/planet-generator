@@ -11,6 +11,12 @@ class Planet {
     this.setPlayerYCoord();
   }
 
+  createChunk(i, j) {
+    if (key(i, j) in this.chunks) return;
+    console.log(`creating chunk ${key(i, j)}`);
+    this.chunks[key(i, j)] = new Chunk(i, j);
+  }
+
   manageChunks() {
     const { i: curI, j: curJ } = this.currentChunk();
 
@@ -25,12 +31,14 @@ class Planet {
       }
     }
 
-    // create new chunks as player moves
-    for (let i = curI - RENDER_DISTANCE; i <= curI + RENDER_DISTANCE; i++) {
-      for (let j = curJ - RENDER_DISTANCE; j <= curJ + RENDER_DISTANCE; j++) {
-        if (!(key(i, j) in this.chunks)) {
-          console.log(`creating chunk ${key(i, j)}`);
-          this.chunks[key(i, j)] = new Chunk(i, j);
+    // create new chunks as player moves (if they don't already exist)
+    for (let i = 0; i <= RENDER_DISTANCE; i++) {
+      for (let j = 0; j <= RENDER_DISTANCE; j++) {
+        this.createChunk(curI + i, curJ + j);
+        if (j != 0) this.createChunk(curI + i, curJ - j);
+        if (i != 0) {
+          this.createChunk(curI - i, curJ + j);
+          if (j != 0) this.createChunk(curI - i, curJ - j);
         }
       }
     }
