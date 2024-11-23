@@ -6,7 +6,7 @@ const BIOME_SIZE = 4; // approx size of a biome in chunks
 const SEA_LEVEL = 0; // height of water
 
 const PLAYER_HEIGHT = 1.8; // how high the eyes are above the ground, in meters
-const MOVEMENT_SPEED = 0.1; // meters per frame
+const WALKING_SPEED = 0.1; // meters per frame
 const RUNNING_SPEED = 0.3; // meters per frame when shift pressed
 const CAMERA_SPEED = 0.2;
 

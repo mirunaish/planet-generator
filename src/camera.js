@@ -37,12 +37,8 @@ class Camera {
     this.setView();
   }
 
-  move(direction, speed) {
-    this.position.x +=
-      direction.x * -Math.sin(-(Math.PI * this.yaw) / 180) * speed +
-      direction.z * -Math.cos(-(Math.PI * this.yaw) / 180) * speed;
-    this.position.z +=
-      direction.x * -Math.cos(-(Math.PI * this.yaw) / 180) * speed +
-      direction.z * +Math.sin(-(Math.PI * this.yaw) / 180) * speed;
+  move(newX, newZ) {
+    this.position.x = newX;
+    this.position.z = newZ;
   }
 }

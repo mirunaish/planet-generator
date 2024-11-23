@@ -67,6 +67,11 @@ class Planet {
     this.camera.setView();
   }
 
+  canWalk(x, z) {
+    const { chunk } = this.currentChunk();
+    return chunk.ground.height({ x: x, z: z }) > 0;
+  }
+
   move(running, movingForward, movingLeft, movingRight, movingBackward) {
     if (movingForward && movingBackward) movingBackward = false;
     if (movingLeft && movingRight) {
@@ -79,7 +84,22 @@ class Planet {
       0,
       movingLeft ? 1 : movingRight ? -1 : 0
     ).unit();
-    this.camera.move(direction, running ? RUNNING_SPEED : MOVEMENT_SPEED);
+
+    const speed = running ? RUNNING_SPEED : WALKING_SPEED;
+
+    // calculate new position after moving
+    const newX =
+      this.camera.position.x +
+      direction.x * -Math.sin(-(Math.PI * this.camera.yaw) / 180) * speed +
+      direction.z * -Math.cos(-(Math.PI * this.camera.yaw) / 180) * speed;
+    const newZ =
+      this.camera.position.z +
+      direction.x * -Math.cos(-(Math.PI * this.camera.yaw) / 180) * speed +
+      direction.z * +Math.sin(-(Math.PI * this.camera.yaw) / 180) * speed;
+
+    if (!this.canWalk(newX, newZ)) return;
+
+    this.camera.move(newX, newZ);
 
     this.manageChunks(); // create or delete chunks as appropriate
     this.setPlayerYCoord(); // move player feet to ground height
