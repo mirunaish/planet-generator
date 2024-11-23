@@ -3,14 +3,18 @@ function key(i, j) {
 }
 
 class Planet {
-  constructor(gl) {
-    this.gl = gl;
-
+  constructor() {
     this.camera = new Camera();
     this.chunks = {};
 
     this.manageChunks();
     this.setPlayerYCoord();
+  }
+
+  createChunk(i, j) {
+    if (key(i, j) in this.chunks) return;
+    console.log(`creating chunk ${key(i, j)}`);
+    this.chunks[key(i, j)] = new Chunk(i, j);
   }
 
   manageChunks() {
@@ -27,12 +31,14 @@ class Planet {
       }
     }
 
-    // create new chunks as player moves
-    for (let i = curI - RENDER_DISTANCE; i <= curI + RENDER_DISTANCE; i++) {
-      for (let j = curJ - RENDER_DISTANCE; j <= curJ + RENDER_DISTANCE; j++) {
-        if (!(key(i, j) in this.chunks)) {
-          console.log(`creating chunk ${key(i, j)}`);
-          this.chunks[key(i, j)] = new Chunk(this.gl, i, j);
+    // create new chunks as player moves (if they don't already exist)
+    for (let i = 0; i <= RENDER_DISTANCE; i++) {
+      for (let j = 0; j <= RENDER_DISTANCE; j++) {
+        this.createChunk(curI + i, curJ + j);
+        if (j != 0) this.createChunk(curI + i, curJ - j);
+        if (i != 0) {
+          this.createChunk(curI - i, curJ + j);
+          if (j != 0) this.createChunk(curI - i, curJ - j);
         }
       }
     }
@@ -61,6 +67,14 @@ class Planet {
     this.camera.setView();
   }
 
+  canWalk(x, z) {
+    const { chunk } = this.currentChunk();
+    if (!chunk.doneGenerating()) return false;
+    if (chunk.ground.height({ x: x, z: z }) <= 0.1) return false;
+
+    return true;
+  }
+
   move(running, movingForward, movingLeft, movingRight, movingBackward) {
     if (movingForward && movingBackward) movingBackward = false;
     if (movingLeft && movingRight) {
@@ -73,19 +87,29 @@ class Planet {
       0,
       movingLeft ? 1 : movingRight ? -1 : 0
     ).unit();
-    this.camera.move(direction, running ? RUNNING_SPEED : MOVEMENT_SPEED);
+
+    const speed = running ? RUNNING_SPEED : WALKING_SPEED;
+
+    // calculate new position after moving
+    const newX =
+      this.camera.position.x +
+      direction.x * -Math.sin(-(Math.PI * this.camera.yaw) / 180) * speed +
+      direction.z * -Math.cos(-(Math.PI * this.camera.yaw) / 180) * speed;
+    const newZ =
+      this.camera.position.z +
+      direction.x * -Math.cos(-(Math.PI * this.camera.yaw) / 180) * speed +
+      direction.z * +Math.sin(-(Math.PI * this.camera.yaw) / 180) * speed;
+
+    if (!this.canWalk(newX, newZ)) return;
+
+    this.camera.move(newX, newZ);
 
     this.manageChunks(); // create or delete chunks as appropriate
     this.setPlayerYCoord(); // move player feet to ground height
   }
 
   render() {
-    // will render ground separately because ground pieces across chunks have to
-    // connect to one another
-    const allGround = Object.values(this.chunks).map((chunk) => chunk.ground);
-    Ground.renderAll(this.gl, allGround, this.camera);
-
-    // render each chunk with everything else other than ground
+    // render each chunk
     Object.values(this.chunks).forEach((chunk) => chunk.render(this.camera));
   }
 }

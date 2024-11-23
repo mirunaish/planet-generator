@@ -9,6 +9,8 @@ class Chunk {
     this.ground = new Ground(this.center); 
     this.trees = []; // trees in scene
 
+    this.generate();
+
     this.generateTrees(); 
     this.generateSmallTrees();
     this.generateLargeTrees();
@@ -133,11 +135,28 @@ class Chunk {
   }
 
   
-  render(camera) {
-    // Render ground (handled separately in Ground)
-    //this.ground.render();
+  
 
-    // render the trees
+  generate() {
+    // add ground
+    this.ground = new Ground(this.center);
+
+    // add water
+    this.water = new Water(this.center);
+  }
+
+  doneGenerating() {
+    // check that all workers are done generating
+    if (!this.ground.mesh) return false;
+    if (!this.water.mesh) return false;
+    return true;
+  }
+
+  render(camera) {
+    if (!this.doneGenerating()) return;
+
+    this.ground.render(camera);
+    this.water.render(camera);
     LSystemTree.renderAll(this.gl, this.trees, camera);
   }
 }
