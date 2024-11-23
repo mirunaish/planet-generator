@@ -26,6 +26,24 @@ function normal(height, pos) {
   return new Vector(-dx / (delta * 2), 1, -dz / (delta * 2));
 }
 
+function lerp(a, b, t) {
+  return a * t + b * (1 - t);
+}
+
+function lerpColor(a, b, t) {
+  return {
+    r: lerp(a.r, b.r, t),
+    g: lerp(a.g, b.g, t),
+    b: lerp(a.b, b.b, t),
+  };
+}
+
+function clip(x, a, b) {
+  if (x < a) return a;
+  if (x > b) return b;
+  return x;
+}
+
 /**
  * get a gradient with given colors and their positions.
  * positions should be increasing from 0 to 1.
