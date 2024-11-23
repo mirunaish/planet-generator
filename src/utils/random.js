@@ -8,7 +8,7 @@ class Random {
   constructor(seed) {
     // seed the random number generator and noise generator
     this.seed = seed;
-    this.openSimplex = new openSimplexNoise(self.seed);
+    this.openSimplex = new openSimplexNoise(this.seed);
   }
 
   /**

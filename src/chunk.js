@@ -8,8 +8,9 @@ class Chunk {
     this.ground = new Ground(this.center);
   }
 
-  render() {
+  render(camera) {
     // ground is rendered separately
     // but render everything else in the chunk here
+    this.ground.render(camera);
   }
 }

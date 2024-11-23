@@ -3,14 +3,18 @@ function key(i, j) {
 }
 
 class Planet {
-  constructor(gl) {
-    this.gl = gl;
-
+  constructor() {
     this.camera = new Camera();
     this.chunks = {};
 
     this.manageChunks();
     this.setPlayerYCoord();
+  }
+
+  createChunk(i, j) {
+    if (key(i, j) in this.chunks) return;
+    console.log(`creating chunk ${key(i, j)}`);
+    this.chunks[key(i, j)] = new Chunk(i, j);
   }
 
   manageChunks() {
@@ -27,12 +31,14 @@ class Planet {
       }
     }
 
-    // create new chunks as player moves
-    for (let i = curI - RENDER_DISTANCE; i <= curI + RENDER_DISTANCE; i++) {
-      for (let j = curJ - RENDER_DISTANCE; j <= curJ + RENDER_DISTANCE; j++) {
-        if (!(key(i, j) in this.chunks)) {
-          console.log(`creating chunk ${key(i, j)}`);
-          this.chunks[key(i, j)] = new Chunk(i, j);
+    // create new chunks as player moves (if they don't already exist)
+    for (let i = 0; i <= RENDER_DISTANCE; i++) {
+      for (let j = 0; j <= RENDER_DISTANCE; j++) {
+        this.createChunk(curI + i, curJ + j);
+        if (j != 0) this.createChunk(curI + i, curJ - j);
+        if (i != 0) {
+          this.createChunk(curI - i, curJ + j);
+          if (j != 0) this.createChunk(curI - i, curJ - j);
         }
       }
     }
@@ -80,12 +86,7 @@ class Planet {
   }
 
   render() {
-    // will render ground separately because ground pieces across chunks have to
-    // connect to one another
-    const allGround = Object.values(this.chunks).map((chunk) => chunk.ground);
-    Ground.renderAll(this.gl, allGround, this.camera);
-
-    // render each chunk with everything else other than ground
-    Object.values(this.chunks).forEach((chunk) => chunk.render());
+    // render each chunk
+    Object.values(this.chunks).forEach((chunk) => chunk.render(this.camera));
   }
 }

@@ -5,7 +5,7 @@ const vec3 LightColor = vec3(1, 1, 0.9);
 
 varying vec3 vWorldPosition;
 varying vec3 vNormal;
-// varying vec3 vColor;
+varying vec3 vColor;
 
 vec3 lambert() {
     vec3 color = LightColor *
@@ -14,6 +14,8 @@ vec3 lambert() {
 }
 
 void main() {
-    vec3 color = 0.7 * vec3(1, 0.5, 0.5);
-    gl_FragColor = vec4(color * lambert(), 1.0);
+    vec3 color = vColor;
+    vec3 ambient = vec3(0.3, 0.35, 0.4);
+    vec3 lightColor = lambert(); // amount of light on this area
+    gl_FragColor = vec4(color * (lightColor + ambient * (vec3(1.0) - lightColor)), 1.0);
 }

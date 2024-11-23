@@ -1,68 +1,63 @@
+console.log("starting ground worker");
+const groundWorker = new Worker("src/webWorkers/groundWorker.js");
+groundWorker.onerror = function (error) {
+  console.error("Worker error:", error);
+};
+
 /** a single chunk of ground */
 class Ground {
-  // use the same rng for all ground instances, so they line up at the edges
-  random = new Random(RANDOM_SEED + 937565);
-
-  // constants for ground generation
-  scale = 0.01; // noise scale
-  octaves = 10; // noise octaves
-  range = { min: -8, max: 20 }; // height range (roughly. may be +-20%)
-  resolution = CHUNK_SIZE * 5; // nb of verts in each direction. one per 10cm
-
   constructor(center) {
-    this.center = center;
-    this.color = [0.5, 0.5, 0.5]; // grey
+    this.center = { x: center.x, y: 0, z: center.z };
+    this.name = `ground:${center.x}:${center.z}`;
+
+    this.subscribeToWorker();
     this.generate();
-    this.logRange();
   }
 
-  /** return height of ground at x and y coordinates */
+  /** once vertices, faces etc have been generated, create a mesh object */
+  updateMesh({ vertices, faces, normals, colors }) {
+    // worker returns normal data as objects, not vectors
+    // need to convert to vectors again
+    normals = normals.map((n) => new Vector(n.x, n.y, n.z));
+
+    this.mesh = new Mesh(vertices, faces, normals, colors);
+  }
+
+  subscribeToWorker() {
+    const callback = (e) => {
+      const { caller, result } = e.data;
+
+      if (caller !== this.name) return; // not for me
+      console.log("updating mesh");
+
+      // create a mesh from data given to me by worker
+      this.updateMesh(result);
+    };
+
+    // when worker responds with data, update my stuff
+    groundWorker.addEventListener("message", callback);
+  }
+
+  /**
+   * return height of ground at x and y coordinates.
+   * if you update this, make sure to update groundGenerator.js too
+   */
   height(pos) {
-    return (
-      this.center.y +
-      this.random.noise(
-        { x: pos.x, z: pos.z },
-        this.scale,
-        this.octaves,
-        this.range
-      )
-    );
+    return GroundGenerator.height(pos);
   }
 
   /** generate vertices of plane with height */
   generate() {
-    const { vertices, faces } = plane(this.center, CHUNK_SIZE, this.resolution);
-
-    for (let i = 0; i <= this.resolution; i++) {
-      for (let j = 0; j <= this.resolution; j++) {
-        const v = vertices[i * (this.resolution + 1) + j];
-        v.y = this.height(v);
-      }
-    }
-
-    this.vertices = vertices;
-    this.faces = faces;
+    // ask ground worker to generate terrain for me
+    // worker will respond with a message when it's done
+    groundWorker.postMessage({
+      caller: this.name,
+      center: this.center,
+    });
   }
 
-  /** log the minimum and maximum height to the console: for debugging purposes */
-  logRange() {
-    let min = Infinity;
-    let max = -Infinity;
-    for (let v of this.vertices) {
-      min = Math.min(min, v.y);
-      max = Math.max(max, v.y);
-    }
-    console.log(`min: ${min}, max: ${max}`);
-  }
-
-  /** render all ground in all visible chunks, making sure they connect */
-  static renderAll(gl, allGround, camera) {
-    // TODO
-
-    // for now, make a mesh of each ground and render it
-    // i will eventually have to combine all grounds into a single mesh
-    allGround
-      .map((g) => new Mesh(gl, g.vertices, g.faces))
-      .forEach((m) => m.render(camera.model, camera.view, camera.projection));
+  render(camera) {
+    if (!this.mesh) return; // waiting for generator
+    this.mesh.render(camera.model, camera.view, camera.projection);
   }
 }
