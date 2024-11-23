@@ -27,7 +27,7 @@ function normal(height, pos) {
 }
 
 function lerp(a, b, t) {
-  return a * t + b * (1 - t);
+  return a * (1 - t) + b * t;
 }
 
 function lerpColor(a, b, t) {

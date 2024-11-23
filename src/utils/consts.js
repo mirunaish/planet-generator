@@ -17,6 +17,11 @@ const COLORS = {
     { r: 0.556, g: 0.408, b: 0.322 }, // brown
     { r: 0.698, g: 0.592, b: 0.514 }, // light brown
   ],
+  sand: [
+    { r: 0.8, g: 0.7, b: 0.3 }, // yellow
+    { r: 0.9, g: 0.8, b: 0.5 }, // light yellow
+    { r: 0.95, g: 0.9, b: 0.7 }, // very light yellow
+  ],
   grass: [
     { r: 0.17, g: 0.26, b: 0.02 }, // dark green
     { r: 0.29, g: 0.427, b: 0.035 }, // green
