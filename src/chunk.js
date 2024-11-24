@@ -56,7 +56,13 @@ class Chunk {
     if (!this.doneGenerating()) return;
 
     this.ground.render(camera);
-    this.water.render(camera);
     this.trees.forEach((t) => t.render(camera));
+  }
+
+  // water must be rendered last because it's transparent
+  renderTransparent(camera) {
+    if (!this.doneGenerating()) return;
+
+    this.water.render(camera);
   }
 }

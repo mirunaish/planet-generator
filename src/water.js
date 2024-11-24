@@ -19,7 +19,7 @@ class Water {
     vertices,
     faces,
     normals,
-    colors,
+    transparency,
     textureCoordinates,
     textureWeights,
   }) {
@@ -27,15 +27,16 @@ class Water {
     // need to convert to vectors again
     normals = normals.map((n) => new Vector(n.x, n.y, n.z));
 
-    this.mesh = new Mesh(
+    const mesh = new Mesh({
       vertices,
       faces,
       normals,
-      colors,
+      transparency,
       textureCoordinates,
-      [WaterGenerator.texture],
-      textureWeights
-    );
+      textures: [WaterGenerator.texture],
+      textureWeights,
+    });
+    this.mesh = mesh;
   }
 
   subscribeToWorker() {
@@ -62,6 +63,11 @@ class Water {
   }
 
   render(camera) {
+    // every frame, move texture a bit
+    this.mesh.setTextureCoordinates(
+      WaterGenerator.animate(this.mesh.textureCoordinates)
+    );
+
     this.mesh.render(camera.model, camera.view, camera.projection);
   }
 }
