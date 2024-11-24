@@ -22,3 +22,4 @@ WebGL procedurally generated planet
 - stackoverflow
   - [web worker](https://stackoverflow.com/a/50221215)
 - an [example of using cyinders for lsystem trees](https://jakelem.com/l-system-foliage/)
+- a [good implementation example of a tree](https://github.com/LanLou123/SnowyTree)
