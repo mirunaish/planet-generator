@@ -8,6 +8,7 @@ class Chunk {
     this.generate();
   }
 
+
   generate() {
     // add ground
     this.ground = new Ground(this.center);
@@ -19,16 +20,25 @@ class Chunk {
     this.trees = [];
 
     for (let i = 0; i < TreeGenerator.treeDensity; i++) {
-      const x = (Math.random() - 0.5) * CHUNK_SIZE + this.center.x;
-      const z = (Math.random() - 0.5) * CHUNK_SIZE + this.center.z;
+        let attempts = 0; // limit for attempts to find a place to generate tree
+        const maxAttempts = 10;
 
-      if (!this.canWalk()) continue; // water or another tree, try again
+        while (attempts < maxAttempts) {
+            attempts++;
 
-      const y = this.ground.height({ x, z }) - 0.5;
-      const treeType = TreeGenerator.randomType();
-      this.trees.push(new LSystemTree({ x, y, z }, treeType));
+            const x = (Math.random() - 0.5) * CHUNK_SIZE + this.center.x;
+            const z = (Math.random() - 0.5) * CHUNK_SIZE + this.center.z;
+
+            if (this.canWalk(x, z)) {     //not water or another tree, can place here
+                const y = this.ground.height({ x, z }) - 0.5;
+                const treeType = TreeGenerator.randomType();
+                this.trees.push(new LSystemTree({ x, y, z }, treeType));
+                break;
+            }
+        }
     }
-  }
+}
+
 
   doneGenerating() {
     // check that all workers are done generating
