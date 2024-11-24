@@ -44,6 +44,13 @@ class Mesh {
     this.toGLMesh();
   }
 
+  setVertices(vertices) {
+    this.positionVbo = createVertexBuffer(
+      this.gl,
+      vertices.flatMap((v) => [v.x, v.y, v.z])
+    );
+  }
+
   setTextureCoordinates(textureCoordinates) {
     this.textureCoordinateVbo = createVertexBuffer(
       this.gl,
@@ -53,16 +60,6 @@ class Mesh {
 
   // create a triangle mesh, optionally using vertex normals if they are specified
   toGLMesh() {
-    // convert array of vertices to array of positions (coords)
-    let positions = [];
-    for (var i = 0; i < this.vertices.length; ++i) {
-      positions.push(
-        this.vertices[i].x,
-        this.vertices[i].y,
-        this.vertices[i].z
-      );
-    }
-
     var indices = [];
 
     // For every face
@@ -105,7 +102,7 @@ class Mesh {
     }
 
     this.indexCount = indices.length;
-    this.positionVbo = createVertexBuffer(this.gl, positions);
+    this.setVertices(this.vertices); // sets this.positionVbo
     this.normalVbo = createVertexBuffer(this.gl, normals);
     if (this.colors) this.colorVbo = createVertexBuffer(this.gl, colors);
     if (this.transparency)
