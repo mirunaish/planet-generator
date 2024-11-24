@@ -21,3 +21,5 @@ WebGL procedurally generated planet
 - a [tutorial on textures](https://learnopengl.com/Getting-started/Textures) and [another one](https://webglfundamentals.org/webgl/lessons/webgl-2-textures.html)
 - stackoverflow
   - [web worker](https://stackoverflow.com/a/50221215)
+- an [example of using cyinders for lsystem trees](https://jakelem.com/l-system-foliage/)
+- a [good implementation example of a tree](https://github.com/LanLou123/SnowyTree)
