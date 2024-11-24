@@ -35,9 +35,50 @@ function plane(center, size, resolution) {
   return { vertices, faces };
 }
 
+/** returns vertices and triangle faces of a sphere */
+function sphere(center, radius, resolution) {
+  const vertices = [];
+  const faces = [];
 
-//cylinder function
-function cylinder(startPosition, endPosition, radius, radialResolution, transform) {
+  for (let i = 0; i <= resolution; i++) {
+    for (let j = 0; j <= resolution; j++) {
+      // two angles, one around y axis and one around x
+      const theta = (i / resolution) * Math.PI;
+      const phi = (j / resolution) * Math.PI * 2;
+
+      const point = {
+        x: center.x + radius * Math.sin(theta) * Math.cos(phi),
+        y: center.y + radius * Math.cos(theta),
+        z: center.z + radius * Math.sin(theta) * Math.sin(phi),
+      };
+
+      vertices.push(new Vector(point.x, point.y, point.z));
+    }
+  }
+
+  for (let i = 0; i < resolution; i++) {
+    for (let j = 0; j < resolution; j++) {
+      const v1 = i * (resolution + 1) + j;
+      const v2 = i * (resolution + 1) + j + 1;
+      const v3 = (i + 1) * (resolution + 1) + j;
+      const v4 = (i + 1) * (resolution + 1) + j + 1;
+
+      // two faces for each square
+      faces.push([v1, v2, v4]);
+      faces.push([v1, v4, v3]);
+    }
+  }
+  return { vertices, faces };
+}
+
+/** returns vertices and faces of a cylinder */
+function cylinder(
+  startPosition,
+  endPosition,
+  radius,
+  radialResolution,
+  transform
+) {
   const vertices = [];
   const faces = [];
 
@@ -72,7 +113,9 @@ function cylinder(startPosition, endPosition, radius, radialResolution, transfor
       endPosition.y,
       endPosition.z + z
     );
-    const transformedTopVertex = transform ? transform.transformPoint(topVertex) : topVertex;
+    const transformedTopVertex = transform
+      ? transform.transformPoint(topVertex)
+      : topVertex;
     vertices.push(transformedTopVertex);
   }
 
@@ -102,5 +145,3 @@ function cylinder(startPosition, endPosition, radius, radialResolution, transfor
 
   return { vertices, faces };
 }
-
-
