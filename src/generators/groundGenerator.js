@@ -1,5 +1,5 @@
 const GroundGenerator = {
-  resolution: 100, // nb of verts in each direction
+  resolution: 50, // nb of verts in each direction, per chunk
 
   heightSeed: RANDOM_SEED + 543,
   colorSeed: RANDOM_SEED + 1946,
