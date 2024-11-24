@@ -25,8 +25,7 @@ class Chunk {
       while (attempts < maxAttempts) {
         attempts++;
 
-        const x = (Math.random() - 0.5) * CHUNK_SIZE + this.center.x;
-        const z = (Math.random() - 0.5) * CHUNK_SIZE + this.center.z;
+        const { x, z } = TreeGenerator.randomPosition(this.center);
 
         if (this.canWalk(x, z)) {
           //not water or another tree, can place here

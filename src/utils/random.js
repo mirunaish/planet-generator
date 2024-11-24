@@ -9,7 +9,7 @@ class Random {
     // seed the random number generator and noise generator
     this.seed = seed;
     this.openSimplex = new openSimplexNoise(this.seed);
-    this.sRandom = seededRandom(this.seed);
+    this.sRandom = new Math.seedrandom(this.seed);
   }
 
   /**
