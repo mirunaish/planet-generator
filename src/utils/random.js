@@ -35,4 +35,18 @@ class Random {
 
     return n;
   }
+
+  /** TODO make this seedable */
+  random() {
+    return Math.random();
+  }
+
+  /** return a random option from an array of choices */
+  choice(options) {
+    const length = options.length;
+    const index = Math.floor(this.random() * length);
+    if (index == length) index--; // in case random is exactly 1
+
+    return options[index];
+  }
 }

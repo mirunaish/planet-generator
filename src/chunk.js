@@ -1,141 +1,12 @@
 class Chunk {
-  constructor(gl, i, j) {
-    this.gl = gl;
+  constructor(i, j) {
     this.i = i;
     this.j = j;
 
     this.center = { x: CHUNK_SIZE * i, y: 0, z: CHUNK_SIZE * j };
 
-    this.ground = new Ground(this.center); 
-    this.trees = []; // trees in scene
-
     this.generate();
-
-    this.generateTrees(); 
-    this.generateSmallTrees();
-    this.generateLargeTrees();
-    this.generateBushyTrees();
-    this.generateCurvyTrees();
   }
-
-  //create bamboo trees at different locations
-  generateTrees() {
-    const treePositions = [
-      { x: this.center.x + 5, y: -2, z: this.center.z + 5 },
-      { x: this.center.x - 5, y: -2, z: this.center.z - 5 },
-    ];
-
-    for (const pos of treePositions) {
-      const tree = new LSystemTree(
-        pos,
-        "F", // Axiom
-        { F: "F[+F]F[-F]F" }, // Rule
-        3, // Iterations
-        2, // Length
-        1.5, // Angle
-        0.1, // Radius
-        8, // Resolution
-        0.0 // Decay Factor
-      );
-      this.trees.push(tree);
-    }
-  }
-
-  //generate smaller plants at different locations 
-  //create trees at different locations
-  generateSmallTrees() {
-    const treePositions = [
-      { x: this.center.x + Math.random(), y: 0, z: this.center.z + Math.random() },
-      { x: this.center.x - Math.random(), y: 0, z: this.center.z - Math.random() },
-    ];
-
-    for (const pos of treePositions) {
-      const tree = new LSystemTree(
-        pos,
-        "F", // Axiom
-        { F: "F[+F]F[-F]F" }, // Rule
-        2, // Iterations
-        1, // Length
-        45, // Angle
-        0.05, // Radius
-        8, // Resolution
-        0.2 // Decay Factor
-      );
-      this.trees.push(tree);
-    }
-  }
-
-  //generate larger trees at different locations
-  generateLargeTrees() {
-    const treePositions = [
-      { x: this.center.x + 8, y: -2, z: this.center.z + 8 },
-      { x: this.center.x - 8, y: -2, z: this.center.z - 8 },
-    ];
-
-    for (const pos of treePositions) {
-      const tree = new LSystemTree(
-        pos,
-        "F", // Axiom
-        { F: "F[+F]F[-F]F" }, // Rule
-        3, // Iterations
-        2, // Length
-        15, // Angle
-        0.1, // Radius
-        8, // Resolution
-        0.0 // Decay Factor
-      );
-      this.trees.push(tree);
-    }
-  }
-
-  //generate bushy trees at different locations
-  generateBushyTrees() {
-    const treePositions = [
-      { x: this.center.x + 15, y: -2, z: this.center.z + 15 },
-      { x: this.center.x - 15, y: -2, z: this.center.z - 15 },
-    ];
-
-    for (const pos of treePositions) {
-      const tree = new LSystemTree(
-        pos,
-        "F", // Axiom
-        { F: "F[+F[+F]]F[-F[-F]]" }, // Rule
-        3, // Iterations
-        2, // Length
-        20, // Angle
-        0.1, // Radius
-        8, // Resolution
-        0.5 // Decay Factor
-      );
-      this.trees.push(tree);
-    }
-  }
-
-  //generate curvy trees at different locations
-  generateCurvyTrees() {
-    const treePositions = [
-      { x: this.center.x + 20, y: -1, z: this.center.z + 5 },
-      { x: this.center.x - 20, y: -1, z: this.center.z - 5 },
-    ];
-
-    for (const pos of treePositions) {
-      const tree = new LSystemTree(
-        pos,
-        "F", // Axiom
-        { F: "F → FF-[-F+F+F]+[+F-F-F]" }, // Rule
-        2, // Iterations
-        0.5, // Length
-        15, // Angle
-        0.1, // Radius
-        8, // Resolution
-        0.5 // Decay Factor
-      );
-      this.trees.push(tree);
-    }
-  }
-
-  
-  
 
   generate() {
     // add ground
@@ -143,12 +14,41 @@ class Chunk {
 
     // add water
     this.water = new Water(this.center);
+
+    // add trees
+    this.trees = [];
+
+    for (let i = 0; i < TreeGenerator.treeDensity; i++) {
+      const x = (Math.random() - 0.5) * CHUNK_SIZE + this.center.x;
+      const z = (Math.random() - 0.5) * CHUNK_SIZE + this.center.z;
+
+      if (!this.canWalk()) continue; // water or another tree, try again
+
+      const y = this.ground.height({ x, z }) - 0.5;
+      const treeType = TreeGenerator.randomType();
+      this.trees.push(new LSystemTree({ x, y, z }, treeType));
+    }
   }
 
   doneGenerating() {
     // check that all workers are done generating
     if (!this.ground.mesh) return false;
     if (!this.water.mesh) return false;
+    for (const tree of this.trees) {
+      if (!tree.mesh) return false;
+    }
+    return true;
+  }
+
+  canWalk(x, z) {
+    // check that i'm not in water
+    if (this.ground.height({ x: x, z: z }) <= 0) return false;
+
+    // check that there are no trees where i'm trying to walk
+    for (let tree of this.trees) {
+      if (tree.collision({ x, z })) return false;
+    }
+
     return true;
   }
 
@@ -157,6 +57,6 @@ class Chunk {
 
     this.ground.render(camera);
     this.water.render(camera);
-    LSystemTree.renderAll(this.gl, this.trees, camera);
+    this.trees.forEach((t) => t.render(camera));
   }
 }

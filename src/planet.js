@@ -5,7 +5,7 @@ function key(i, j) {
 class Planet {
   constructor() {
     this.camera = new Camera();
-    this.chunks = {};
+    this.chunks = { [key(0, 0)]: new Chunk(0, 0) };
 
     this.manageChunks();
     this.setPlayerYCoord();
@@ -45,8 +45,7 @@ class Planet {
   }
 
   /** get chunk that contains x and y coordinate */
-  currentChunk() {
-    const { x, z } = this.camera.position;
+  getChunk(x, z) {
     const i = Math.floor((x + 8) / 16);
     const j = Math.floor((z + 8) / 16);
     return {
@@ -54,6 +53,12 @@ class Planet {
       j: j,
       chunk: this.chunks[key(i, j)],
     };
+  }
+
+  /** get chunk that contains camera coordinates */
+  currentChunk() {
+    const { x, z } = this.camera.position;
+    return this.getChunk(x, z);
   }
 
   /**
@@ -68,11 +73,9 @@ class Planet {
   }
 
   canWalk(x, z) {
-    const { chunk } = this.currentChunk();
+    const { chunk } = this.getChunk(x, z);
     if (!chunk.doneGenerating()) return false;
-    if (chunk.ground.height({ x: x, z: z }) <= 0.1) return false;
-
-    return true;
+    return chunk.canWalk(x, z);
   }
 
   move(running, movingForward, movingLeft, movingRight, movingBackward) {
