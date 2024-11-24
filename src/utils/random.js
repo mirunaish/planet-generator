@@ -36,6 +36,34 @@ class Random {
     return n;
   }
 
+  noise3D(
+    { x, y, z },
+    scale = 1,
+    octaves = 1,
+    { min, max } = { min: -1, max: 1 }
+  ) {
+    let n = 0;
+
+    if (!octaves.length) octaves = Array.from({ length: octaves }, (_, i) => i);
+
+    // add together octaves, scaled by 2 each time
+    for (let i of octaves) {
+      const size = 2 ** i;
+      const d = i * 1; // offset noise so it doesn't all shrink towards the center
+      n +=
+        this.openSimplex.noise3D(
+          x * scale * size + d,
+          y * scale * size + d,
+          z * scale * size + d
+        ) / size;
+    }
+
+    // scale to [min, max] (roughly) (n may not be [-1, 1] if octaves > 1)
+    n = ((n + 1) / 2) * (max - min) + min;
+
+    return n;
+  }
+
   /** TODO make this seedable */
   random() {
     return Math.random();
