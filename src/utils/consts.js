@@ -37,7 +37,7 @@ const COLORS = {
   ],
   water: { r: 0.1, g: 0.2, b: 0.5 },
   tree: {
-    base: { r: 0.0, g: 0.7, b: 0.0 }, // Dark green (base)
-    leaf: { r: 0.0, g: 0.5, b: 0.0 }, // Green (higher branches)
+    base: { r: 0.247, g: 0.179, b: 0.11 }, // Dark brown (base)
+    leaf: { r: 0.3, g: 0.2, b: 0.2 }, // brown (higher branches)
   },
 };
