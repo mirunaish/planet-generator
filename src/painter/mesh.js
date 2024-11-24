@@ -90,17 +90,6 @@ class Mesh {
       }
     }
 
-    // convert array of texture coordinates to array of components
-    let textureCoordinates = [];
-    if (this.textureCoordinates) {
-      for (let i = 0; i < this.textureCoordinates.length; ++i) {
-        textureCoordinates.push(
-          this.textureCoordinates[i].u,
-          this.textureCoordinates[i].v
-        );
-      }
-    }
-
     this.indexCount = indices.length;
     this.setVertices(this.vertices); // sets this.positionVbo
     this.normalVbo = createVertexBuffer(this.gl, normals);
@@ -110,10 +99,8 @@ class Mesh {
     this.indexIbo = createIndexBuffer(this.gl, indices);
 
     if (this.textureCoordinates)
-      this.textureCoordinateVbo = createVertexBuffer(
-        this.gl,
-        textureCoordinates
-      );
+      this.setTextureCoordinates(this.textureCoordinates); // sets this.textureCoordinateVbo
+
     if (this.textureWeights)
       this.textureWeightVbo = this.textureWeights.map((w) =>
         createVertexBuffer(this.gl, w)
