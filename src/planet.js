@@ -34,15 +34,18 @@ class Planet {
     }
 
     // create new chunks as player moves (if they don't already exist)
-    for (let i = 0; i <= RENDER_DISTANCE; i++) {
-      for (let j = 0; j <= RENDER_DISTANCE; j++) {
-        this.createChunk(curI + i, curJ + j);
-        if (j != 0) this.createChunk(curI + i, curJ - j);
-        if (i != 0) {
-          this.createChunk(curI - i, curJ + j);
-          if (j != 0) this.createChunk(curI - i, curJ - j);
-        }
+    this.createChunk(curI, curJ); // just in case 0 wasn't generated
+    for (let d = 1; d <= RENDER_DISTANCE; d++) {
+      // create all chunks at distance d
+      for (let i = -d; i <= d; i++) {
+        this.createChunk(curI + i, curJ - d);
+        this.createChunk(curI + i, curJ + d);
       }
+      for (let j = -d; j <= d; j++) {
+        this.createChunk(curI - d, curJ + j);
+        this.createChunk(curI + d, curJ + j);
+      }
+      // this will get the corners twice but that's fine
     }
   }
 

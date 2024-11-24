@@ -1,5 +1,5 @@
 const RANDOM_SEED = 29576359; // seed for the rng. just a random number
-const RENDER_DISTANCE = 2; // # chunks to render in each direction
+const RENDER_DISTANCE = 5; // # chunks to render in each direction
 const CHUNK_SIZE = 10; // # meters in each direction
 
 const BIOME_SIZE = 4; // approx size of a biome in chunks
