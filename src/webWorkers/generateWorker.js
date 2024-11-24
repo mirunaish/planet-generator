@@ -1,5 +1,6 @@
 // import stuff separately because worker doesn't have access to the DOM
 importScripts("../../res/openSimplexNoise.js");
+importScripts("../../res/seededRandom.js");
 importScripts("../../res/vector.js");
 importScripts("../utils/consts.js");
 importScripts("../utils/primitives.js");

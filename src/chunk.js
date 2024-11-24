@@ -19,8 +19,7 @@ class Chunk {
     this.trees = [];
 
     for (let i = 0; i < TreeGenerator.treeDensity; i++) {
-      const x = (Math.random() - 0.5) * CHUNK_SIZE + this.center.x;
-      const z = (Math.random() - 0.5) * CHUNK_SIZE + this.center.z;
+      const { x, z } = TreeGenerator.randomPosition(this.center);
 
       if (!this.canWalk()) continue; // water or another tree, try again
 

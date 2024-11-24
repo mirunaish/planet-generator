@@ -58,6 +58,13 @@ const TreeGenerator = {
     return TreeGenerator.treeRandom.choice(Object.keys(TreeGenerator.types));
   },
 
+  randomPosition: (center) => {
+    const x = (TreeGenerator.treeRandom.random() - 0.5) * CHUNK_SIZE + center.x;
+    const z = (TreeGenerator.treeRandom.random() - 0.5) * CHUNK_SIZE + center.z;
+
+    return { x, z };
+  },
+
   // end position of the cylinder
   getEndPosition: (startPosition, direction, length) => {
     return {
@@ -77,7 +84,7 @@ const TreeGenerator = {
     const sinAngle = Math.sin(radian);
 
     // randomly select the axis to rotate cylinder around
-    const axis = Math.floor(Math.random() * 3); // 0 = X, 1 = Y, 2 = Z
+    const axis = Math.floor(TreeGenerator.treeRandom.random() * 3); // 0 = X, 1 = Y, 2 = Z
 
     if (axis === 0) {
       // Rotate around the x-axis
