@@ -9,6 +9,7 @@ class Random {
     // seed the random number generator and noise generator
     this.seed = seed;
     this.openSimplex = new openSimplexNoise(this.seed);
+    this.sRandom = new Math.seedrandom(this.seed);
   }
 
   /**
@@ -66,7 +67,7 @@ class Random {
 
   /** TODO make this seedable */
   random() {
-    return Math.random();
+    return this.sRandom();
   }
 
   /** return a random option from an array of choices */
