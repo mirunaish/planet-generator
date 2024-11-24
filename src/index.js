@@ -116,6 +116,8 @@ function setupPlanetGenerator() {
   }
 
   gl.enable(gl.DEPTH_TEST); // enable z-buffering
+  gl.enable(gl.BLEND); // enable transparency blending
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
   // create planet
   var planet = new Planet(gl);

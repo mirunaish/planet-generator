@@ -1,20 +1,30 @@
 /** adapted from assignment 3 GLMesh.js and Mesh.js */
 
 class Mesh {
-  constructor(
+  constructor({
     vertices,
     faces,
     normals,
     colors,
+    transparency,
     textureCoordinates,
     textures,
-    textureWeights
-  ) {
+    textureWeights,
+  }) {
+    if (!vertices || !faces || !normals) {
+      console.error(
+        "you forgot to pass vertices, faces, or normals to the mesh"
+      );
+      return;
+    }
+
     this.gl = gl;
     this.vertices = vertices;
     this.faces = faces;
-    if (normals && normals.length) this.normals = normals;
+    this.normals = normals;
+
     if (colors && colors.length) this.colors = colors;
+    if (transparency && transparency.length) this.transparency = transparency;
     if (textureCoordinates && textureCoordinates.length)
       this.textureCoordinates = textureCoordinates;
     if (textures && textures.length) {
@@ -41,6 +51,13 @@ class Mesh {
     );
   }
 
+  setTextureCoordinates(textureCoordinates) {
+    this.textureCoordinateVbo = createVertexBuffer(
+      this.gl,
+      textureCoordinates.flatMap((c) => [c.u, c.v])
+    );
+  }
+
   // create a triangle mesh, optionally using vertex normals if they are specified
   toGLMesh() {
     var indices = [];
@@ -58,37 +75,11 @@ class Mesh {
       }
     }
 
-    // calculate normals
+    // copy over normals
     var normals = [];
-    if (this.normals) {
-      // mesh contains vertex normals, just copy them
-      for (var i = 0; i < this.normals.length; ++i) {
-        var n = this.normals[i].unit();
-        normals.push(n.x, n.y, n.z);
-      }
-    } else {
-      // no vertex normals available, so compute them by averaging face normals
-
-      // initialize averaged normals to zero
-      var avgNormals = Array(this.vertices.length).fill(new Vector(0, 0, 0));
-
-      for (var i = 0; i < this.faces.length; ++i) {
-        var faceNormal = calcFaceNormal(this, i);
-        for (var j = 0; j < this.faces[i].length - 2; ++j) {
-          var v1 = this.faces[i][0];
-          var v2 = this.faces[i][j + 1];
-          var v3 = this.faces[i][j + 2];
-
-          avgNormals[v1] = avgNormals[v1].add(faceNormal);
-          avgNormals[v2] = avgNormals[v2].add(faceNormal);
-          avgNormals[v3] = avgNormals[v3].add(faceNormal);
-        }
-      }
-
-      for (var i = 0; i < avgNormals.length; ++i) {
-        var n = avgNormals[i].unit();
-        normals.push(n.x, n.y, n.z);
-      }
+    for (var i = 0; i < this.normals.length; ++i) {
+      var n = this.normals[i].unit();
+      normals.push(n.x, n.y, n.z);
     }
 
     // convert array of colors to array of components
@@ -99,28 +90,17 @@ class Mesh {
       }
     }
 
-    // convert array of texture coordinates to array of components
-    let textureCoordinates = [];
-    if (this.textureCoordinates) {
-      for (let i = 0; i < this.textureCoordinates.length; ++i) {
-        textureCoordinates.push(
-          this.textureCoordinates[i].u,
-          this.textureCoordinates[i].v
-        );
-      }
-    }
-
     this.indexCount = indices.length;
     this.setVertices(this.vertices); // sets this.positionVbo
     this.normalVbo = createVertexBuffer(this.gl, normals);
     if (this.colors) this.colorVbo = createVertexBuffer(this.gl, colors);
+    if (this.transparency)
+      this.transparencyVbo = createVertexBuffer(this.gl, this.transparency);
     this.indexIbo = createIndexBuffer(this.gl, indices);
 
     if (this.textureCoordinates)
-      this.textureCoordinateVbo = createVertexBuffer(
-        this.gl,
-        textureCoordinates
-      );
+      this.setTextureCoordinates(this.textureCoordinates); // sets this.textureCoordinateVbo
+
     if (this.textureWeights)
       this.textureWeightVbo = this.textureWeights.map((w) =>
         createVertexBuffer(this.gl, w)
@@ -129,7 +109,7 @@ class Mesh {
 
   bindBuffer(attributeName, buffer, size) {
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    var attribute = gl.getAttribLocation(this.shaderProgram, attributeName);
+    const attribute = gl.getAttribLocation(this.shaderProgram, attributeName);
     gl.enableVertexAttribArray(attribute);
     gl.vertexAttribPointer(attribute, size, gl.FLOAT, false, 0, 0);
   }
@@ -144,6 +124,13 @@ class Mesh {
     // vertex colors
     if (this.colors) {
       this.bindBuffer("Color", this.colorVbo, 3);
+    }
+    if (this.transparency) {
+      this.bindBuffer("Transparency", this.transparencyVbo, 1);
+      gl.uniform1i(
+        gl.getUniformLocation(this.shaderProgram, "uUseTransparency"),
+        this.transparency === undefined ? 0 : 1
+      );
     }
 
     // add everything texture related

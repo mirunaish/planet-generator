@@ -118,5 +118,9 @@ class Planet {
 
     // render each chunk
     Object.values(this.chunks).forEach((chunk) => chunk.render(this.camera));
+    // water must be rendered last because it's transparent
+    Object.values(this.chunks).forEach((chunk) =>
+      chunk.renderTransparent(this.camera)
+    );
   }
 }

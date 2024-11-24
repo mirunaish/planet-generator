@@ -1,31 +1,5 @@
 // any necessary math functions etc go here
 
-/** get the normal to a triangular face in a mesh */
-function calcFaceNormal(mesh, faceIndex) {
-  var v1 = mesh.vertices[mesh.faces[faceIndex][0]];
-  var v2 = mesh.vertices[mesh.faces[faceIndex][1]];
-  var v3 = mesh.vertices[mesh.faces[faceIndex][2]];
-
-  var e1 = v2.subtract(v1);
-  var e2 = v3.subtract(v1);
-
-  return e1.cross(e2).unit();
-}
-
-/** given a height function and a position, calculate normal at this position */
-function normal(height, pos) {
-  const delta = 0.001;
-
-  const dx =
-    height({ x: pos.x + delta, z: pos.z }) -
-    height({ x: pos.x - delta, z: pos.z });
-  const dz =
-    height({ x: pos.x, z: pos.z + delta }) -
-    height({ x: pos.x, z: pos.z - delta });
-
-  return new Vector(-dx / (delta * 2), 1, -dz / (delta * 2));
-}
-
 function lerp(a, b, t) {
   return a * (1 - t) + b * t;
 }
@@ -73,4 +47,56 @@ function getGradient(colors, positions) {
 
     return { r, g, b };
   };
+}
+
+/** given a height function and a position, calculate normal at this position */
+function normal(height, pos) {
+  const delta = 0.001;
+
+  const dx =
+    height({ x: pos.x + delta, z: pos.z }) -
+    height({ x: pos.x - delta, z: pos.z });
+  const dz =
+    height({ x: pos.x, z: pos.z + delta }) -
+    height({ x: pos.x, z: pos.z - delta });
+
+  return new Vector(-dx / (delta * 2), 1, -dz / (delta * 2));
+}
+
+/** get the normal to a triangular face in a mesh */
+function calcFaceNormal({ vertices, faces }, faceIndex) {
+  var v1 = vertices[faces[faceIndex][0]];
+  var v2 = vertices[faces[faceIndex][1]];
+  var v3 = vertices[faces[faceIndex][2]];
+
+  var e1 = v2.subtract(v1);
+  var e2 = v3.subtract(v1);
+
+  return e1.cross(e2).unit();
+}
+
+/** compute normals at vertices */
+function computeNormals(vertices, faces) {
+  // initialize averaged normals to zero
+  var avgNormals = Array(vertices.length).fill(new Vector(0, 0, 0));
+
+  for (var i = 0; i < faces.length; ++i) {
+    var faceNormal = calcFaceNormal({ vertices, faces }, i);
+    for (var j = 0; j < faces[i].length - 2; ++j) {
+      var v1 = faces[i][0];
+      var v2 = faces[i][j + 1];
+      var v3 = faces[i][j + 2];
+
+      avgNormals[v1] = avgNormals[v1].add(faceNormal);
+      avgNormals[v2] = avgNormals[v2].add(faceNormal);
+      avgNormals[v3] = avgNormals[v3].add(faceNormal);
+    }
+  }
+
+  // normalize normals
+  for (var i = 0; i < avgNormals.length; ++i) {
+    avgNormals[i] = avgNormals[i].unit();
+  }
+
+  return avgNormals;
 }

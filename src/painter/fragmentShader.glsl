@@ -7,6 +7,8 @@ varying vec3 vWorldPosition;
 varying vec3 vNormal;
 
 varying vec3 vColor;
+varying float vTransparency;
+uniform bool uUseTransparency;
 
 varying vec2 vTextureCoord;
 uniform int uUseTextures; // how many textures to use
@@ -40,11 +42,13 @@ vec3 textureColor() {
 void main() {
     vec3 color = vec3(0.0, 0.0, 0.0);
     if (uUseTextures == 0) color = vColor;
+    float transparency = 1.0;
+    if (uUseTransparency) transparency = vTransparency;
 
     vec3 texture = textureColor();
 
     vec3 ambient = vec3(0.3, 0.35, 0.4);
     vec3 lightColor = lambert(); // amount of light on this area
 
-    gl_FragColor = vec4((color + texture) * (lightColor + ambient * (vec3(1.0) - lightColor)), 1.0);
+    gl_FragColor = vec4((color + texture) * (lightColor + ambient * (vec3(1.0) - lightColor)), transparency);
 }

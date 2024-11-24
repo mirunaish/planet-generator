@@ -27,20 +27,20 @@ class Ground {
     // need to convert to vectors again
     normals = normals.map((n) => new Vector(n.x, n.y, n.z));
 
-    this.mesh = new Mesh(
+    this.mesh = new Mesh({
       vertices,
       faces,
       normals,
       colors,
       textureCoordinates,
-      [
+      textures: [
         GroundGenerator.groundTexture,
         GroundGenerator.grassTexture,
         GroundGenerator.sandTexture,
         GroundGenerator.snowTexture,
       ],
-      textureWeights
-    );
+      textureWeights,
+    });
   }
 
   subscribeToWorker() {

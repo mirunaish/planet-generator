@@ -113,6 +113,7 @@ const TreeGenerator = {
     const vertices = [];
     const faces = [];
     const colors = [];
+    const normals = [];
 
     addMesh = (newVertices, newFaces, color) => {
       const offset = vertices.length;
@@ -126,6 +127,9 @@ const TreeGenerator = {
 
       // Add faces with adjusted indices
       faces.push(...newFaces.map((face) => face.map((i) => i + offset)));
+
+      // add normals too
+      normals.push(...computeNormals(newVertices, newFaces));
     };
 
     const { axiom, rules, iterations, length, angle, radius, decayFactor } =
@@ -217,6 +221,6 @@ const TreeGenerator = {
       }
     }
 
-    return { vertices, faces, colors };
+    return { vertices, faces, normals, colors };
   },
 };
