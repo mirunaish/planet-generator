@@ -38,8 +38,11 @@ vec3 textureColor() {
 }
 
 void main() {
-    vec3 color = vColor;
+    vec3 color = vec3(0.0, 0.0, 0.0);
+    if (uUseTextures == 0) color = vColor;
+
     vec3 texture = textureColor();
+
     vec3 ambient = vec3(0.3, 0.35, 0.4);
     vec3 lightColor = lambert(); // amount of light on this area
 
