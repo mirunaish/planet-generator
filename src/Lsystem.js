@@ -66,39 +66,33 @@ class LSystemTree {
     });
   }
 
-
-render(camera) {
+  render(camera) {
     if (!this.mesh) return; // waiting for worker to generate the mesh
 
     // the time and the amplitude and the speed for the swaying of trees
-    const time = performance.now() / 1000; 
-    const swayAmplitude = 0.1; 
-    const swaySpeed = 1.0; 
+    const time = performance.now() / 1000;
+    const swayAmplitude = 0.1;
+    const swaySpeed = 1.0;
 
     // height of tree
     const maxTreeHeight = Math.max(...this.mesh.vertices.map((v) => v.y));
 
     // apply sway to vertices
     const animatedVertices = this.mesh.vertices.map((vertex) => {
-        // damping for more sway near top of trees
-        const damping = vertex.y / maxTreeHeight;
+      // damping for more sway near top of trees
+      const damping = vertex.y / maxTreeHeight;
 
-        // swaying in the x and z axis 
-        const swayX = damping * swayAmplitude * Math.sin(swaySpeed * time + vertex.y);
-        const swayZ = damping * swayAmplitude * 0.5 * Math.cos(swaySpeed * time + vertex.y);
+      // swaying in the x and z axis
+      const swayX =
+        damping * swayAmplitude * Math.sin(swaySpeed * time + vertex.y);
+      const swayZ =
+        damping * swayAmplitude * 0.5 * Math.cos(swaySpeed * time + vertex.y);
 
-        
-        return new Vector(vertex.x + swayX, vertex.y, vertex.z + swayZ);
+      return new Vector(vertex.x + swayX, vertex.y, vertex.z + swayZ);
     });
 
     // render using animated mesh
-    const animatedMesh = new Mesh(animatedVertices, this.mesh.faces, this.mesh.normals, this.mesh.colors);
-    animatedMesh.render(camera.model, camera.view, camera.projection);
-}
-
-
-
-
-
-
+    this.mesh.setVertices(animatedVertices);
+    this.mesh.render(camera.model, camera.view, camera.projection);
+  }
 }
