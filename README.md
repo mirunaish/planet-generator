@@ -1,8 +1,12 @@
 # Planet Generator
 
+![Planet Generator](./img/PlanetExplorer.png)
+
 WebGL procedurally generated planet
 
-## Instructions
+Hosted on Render [here](https://planet-generator.onrender.com/). Designed to run on a GPU.
+
+## Local setup
 
 1. If you have made any changes to `fragmentShader.glsl` or `vertexShader.glsl`,
    make sure to run `bash scripts/convertShadersToJs.sh` from the project root
